@@ -1,0 +1,1376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- IMPORTANT: Prevents search engines from indexing this page -->
+    <meta name="robots" content="noindex, nofollow, noarchive">
+    <title>Retreat Manager — Shalom</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
+    <style>
+    /* ===== RESET ===== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+        --olive:       #4d5e38;
+        --olive-light: #6b7c52;
+        --olive-dark:  #2f3a21;
+        --gold:        #b8975a;
+        --cream:       #f4f1eb;
+        --white:       #ffffff;
+        --text:        #222222;
+        --text-muted:  #6b6b6b;
+        --border:      #d8d2c6;
+        --danger:      #b83232;
+        --success:     #2d7a4f;
+        --warn-bg:     #fffbeb;
+        --warn-border: #f59e0b;
+        --warn-text:   #78350f;
+        --shadow:      0 2px 10px rgba(0,0,0,0.09);
+        --shadow-lg:   0 8px 30px rgba(0,0,0,0.14);
+        --r:           8px;
+        --r-lg:        14px;
+    }
+
+    body { font-family: 'Lato', sans-serif; background: var(--cream); color: var(--text); min-height: 100vh; }
+    h1, h2, h3, h4 { font-family: 'Cormorant Garamond', serif; font-weight: 600; }
+    a { color: var(--olive); }
+
+    /* ===== UTILITY ===== */
+    .hidden { display: none !important; }
+
+    /* ===== BUTTONS ===== */
+    .btn {
+        display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+        padding: 10px 20px; border-radius: var(--r); border: none;
+        font-family: 'Lato', sans-serif; font-size: 14px; font-weight: 700;
+        cursor: pointer; transition: all 0.18s; letter-spacing: 0.3px;
+        text-decoration: none; white-space: nowrap;
+    }
+    .btn:disabled { opacity: 0.55; cursor: not-allowed; }
+    .btn-primary   { background: var(--olive); color: #fff; }
+    .btn-primary:hover:not(:disabled) { background: var(--olive-dark); transform: translateY(-1px); box-shadow: 0 3px 10px rgba(0,0,0,0.18); }
+    .btn-secondary { background: transparent; color: var(--olive); border: 2px solid var(--olive); }
+    .btn-secondary:hover:not(:disabled) { background: var(--olive); color: #fff; }
+    .btn-danger    { background: var(--danger); color: #fff; }
+    .btn-danger:hover:not(:disabled) { background: #942828; }
+    .btn-ghost     { background: transparent; color: var(--text-muted); padding: 8px 12px; }
+    .btn-ghost:hover:not(:disabled) { background: rgba(0,0,0,0.06); color: var(--text); }
+    .btn-sm   { padding: 7px 14px; font-size: 13px; }
+    .btn-icon { padding: 8px; min-width: 36px; border-radius: var(--r); }
+    .btn-full { width: 100%; }
+
+    /* ===== FORM ===== */
+    .form-group { display: flex; flex-direction: column; gap: 5px; margin-bottom: 14px; }
+    .form-group:last-child { margin-bottom: 0; }
+    label.field-label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: var(--text); }
+    .field-hint { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+        padding: 10px 13px; border: 1.5px solid var(--border);
+        border-radius: var(--r); font-family: 'Lato', sans-serif; font-size: 14px;
+        background: var(--white); color: var(--text); transition: border-color 0.2s, box-shadow 0.2s;
+        width: 100%;
+    }
+    .form-group input:focus,
+    .form-group textarea:focus { outline: none; border-color: var(--olive); box-shadow: 0 0 0 3px rgba(77,94,56,0.12); }
+    .form-group textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+    /* ===== AUTH SCREENS ===== */
+    .auth-screen {
+        min-height: 100vh; display: flex; align-items: center; justify-content: center;
+        padding: 32px 20px; background: var(--cream);
+    }
+    .auth-card {
+        background: var(--white); border-radius: var(--r-lg);
+        box-shadow: var(--shadow-lg); padding: 48px 44px; max-width: 500px; width: 100%;
+    }
+    .auth-logo { text-align: center; margin-bottom: 36px; }
+    .auth-logo .cross { font-size: 36px; color: var(--gold); margin-bottom: 6px; display: block; }
+    .auth-logo h1 { font-size: 30px; color: var(--olive-dark); font-weight: 400; }
+    .auth-logo p  { font-size: 14px; color: var(--text-muted); margin-top: 4px; }
+    .auth-divider { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
+    .auth-link { text-align: center; font-size: 13px; color: var(--text-muted); margin-top: 16px; }
+
+    /* Step indicator */
+    .step-bar { display: flex; gap: 6px; margin-bottom: 28px; }
+    .step-bar-item { flex: 1; height: 4px; background: var(--border); border-radius: 2px; transition: background 0.3s; }
+    .step-bar-item.active { background: var(--olive); }
+    .step-bar-item.done   { background: var(--gold); }
+
+    /* ===== TOPBAR ===== */
+    .topbar {
+        background: var(--olive-dark); color: #fff;
+        height: 58px; padding: 0 28px;
+        display: flex; align-items: center; justify-content: space-between;
+        position: sticky; top: 0; z-index: 200;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+    }
+    .topbar-brand { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 400; display: flex; align-items: center; gap: 10px; }
+    .topbar-brand .cross { color: var(--gold); font-size: 18px; }
+    .topbar-brand .pipe  { opacity: 0.3; margin: 0 4px; }
+    .topbar-brand small  { font-family: 'Lato', sans-serif; font-size: 13px; font-weight: 400; opacity: 0.65; }
+    .topbar-actions { display: flex; gap: 4px; }
+    .topbar .btn-ghost { color: rgba(255,255,255,0.65); }
+    .topbar .btn-ghost:hover { background: rgba(255,255,255,0.1); color: #fff; }
+
+    /* ===== DASHBOARD LAYOUT ===== */
+    .dashboard-body { display: flex; flex-direction: column; min-height: calc(100vh - 58px); }
+    .main { flex: 1; max-width: 860px; margin: 0 auto; width: 100%; padding: 36px 24px; }
+
+    /* ===== SECTION HEADER ===== */
+    .section-hd { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 24px; gap: 16px; }
+    .section-hd h2 { font-size: 30px; font-weight: 400; color: var(--olive-dark); }
+    .section-hd p  { font-size: 13px; color: var(--text-muted); margin-top: 3px; }
+    .section-hd-actions { display: flex; gap: 8px; flex-shrink: 0; }
+
+    /* ===== UNSAVED BANNER ===== */
+    .unsaved-banner {
+        display: flex; align-items: center; gap: 10px;
+        background: var(--warn-bg); border: 1.5px solid var(--warn-border);
+        border-radius: var(--r); padding: 12px 16px;
+        font-size: 14px; color: var(--warn-text); margin-bottom: 20px;
+    }
+
+    /* ===== RETREAT LIST ===== */
+    .retreat-list { display: flex; flex-direction: column; gap: 10px; }
+
+    .retreat-item {
+        background: var(--white); border: 1.5px solid var(--border);
+        border-radius: var(--r-lg); padding: 14px 18px;
+        display: flex; align-items: center; gap: 14px;
+        transition: box-shadow 0.18s, border-color 0.18s;
+    }
+    .retreat-item:hover { box-shadow: var(--shadow); border-color: var(--olive-light); }
+    .retreat-item.sortable-ghost { opacity: 0.35; background: var(--cream); }
+    .retreat-item.sortable-chosen { box-shadow: var(--shadow-lg); }
+
+    .drag-handle {
+        color: var(--border); cursor: grab; padding: 6px 4px; flex-shrink: 0;
+        transition: color 0.15s; user-select: none;
+    }
+    .drag-handle:hover { color: var(--text-muted); }
+    .drag-handle:active { cursor: grabbing; }
+
+    .retreat-thumb {
+        width: 78px; height: 58px; border-radius: var(--r);
+        object-fit: cover; flex-shrink: 0; background: var(--cream);
+        border: 1px solid var(--border);
+    }
+    .retreat-thumb-placeholder {
+        width: 78px; height: 58px; border-radius: var(--r);
+        background: var(--cream); border: 1px solid var(--border);
+        display: flex; align-items: center; justify-content: center;
+        color: var(--border); flex-shrink: 0;
+    }
+
+    .retreat-meta { flex: 1; min-width: 0; }
+    .retreat-meta-name {
+        font-size: 15px; font-weight: 700; color: var(--text);
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .retreat-meta-date { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
+    .retreat-meta-tag {
+        display: inline-block; margin-top: 5px;
+        background: var(--cream); border: 1px solid var(--border);
+        border-radius: 4px; padding: 2px 8px;
+        font-size: 11px; font-weight: 700; letter-spacing: 0.5px;
+        text-transform: uppercase; color: var(--olive);
+    }
+
+    .retreat-actions { display: flex; gap: 6px; flex-shrink: 0; }
+
+    /* Empty state */
+    .empty-state {
+        background: var(--white); border: 2px dashed var(--border);
+        border-radius: var(--r-lg); padding: 56px 32px; text-align: center;
+    }
+    .empty-state h3 { font-size: 22px; color: var(--text-muted); margin-bottom: 8px; }
+    .empty-state p  { font-size: 14px; color: var(--text-muted); margin-bottom: 20px; }
+
+    /* ===== SETTINGS PANEL ===== */
+    .settings-panel {
+        background: var(--white); border: 1.5px solid var(--border);
+        border-radius: var(--r-lg); padding: 28px; margin-top: 36px;
+    }
+    .settings-panel h3 { font-size: 22px; font-weight: 400; color: var(--olive-dark); margin-bottom: 24px; }
+    .settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+    .settings-col h4 {
+        font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px;
+        color: var(--text-muted); margin-bottom: 14px;
+        padding-bottom: 8px; border-bottom: 1px solid var(--border);
+    }
+    .config-display { font-size: 13px; color: var(--text-muted); line-height: 2; }
+    .config-display strong { color: var(--text); }
+
+    /* ===== MODAL ===== */
+    .modal-overlay {
+        position: fixed; inset: 0; background: rgba(0,0,0,0.45);
+        display: flex; align-items: flex-start; justify-content: center;
+        z-index: 1000; padding: 24px 16px; overflow-y: auto;
+        backdrop-filter: blur(2px);
+    }
+    .modal {
+        background: var(--white); border-radius: var(--r-lg);
+        box-shadow: var(--shadow-lg); width: 100%; max-width: 620px;
+        margin: auto; animation: modalIn 0.2s ease;
+    }
+    @keyframes modalIn {
+        from { opacity: 0; transform: translateY(-12px) scale(0.98); }
+        to   { opacity: 1; transform: none; }
+    }
+    .modal-hd {
+        padding: 24px 28px 0; display: flex;
+        align-items: center; justify-content: space-between;
+    }
+    .modal-hd h2 { font-size: 24px; font-weight: 400; color: var(--olive-dark); }
+    .modal-body { padding: 22px 28px; }
+    .modal-ft {
+        padding: 16px 28px 24px; display: flex;
+        justify-content: flex-end; gap: 10px;
+        border-top: 1px solid var(--border);
+    }
+
+    /* ===== IMAGE SECTION ===== */
+    .img-tabs {
+        display: flex; border: 1.5px solid var(--border);
+        border-radius: var(--r); overflow: hidden; margin-bottom: 14px;
+    }
+    .img-tab {
+        flex: 1; padding: 9px 14px; background: var(--cream); border: none;
+        font-family: 'Lato', sans-serif; font-size: 13px; font-weight: 700;
+        cursor: pointer; color: var(--text-muted); transition: all 0.18s;
+    }
+    .img-tab.active { background: var(--olive); color: #fff; }
+    .img-tab:not(.active):hover { background: var(--border); }
+
+    .cropper-container-wrap {
+        width: 100%; max-height: 280px; overflow: hidden;
+        border-radius: var(--r); border: 1.5px solid var(--border);
+        background: #1a1a1a;
+    }
+    .cropper-container-wrap img { max-width: 100%; display: block; }
+
+    .img-preview {
+        width: 100%; height: 150px; border-radius: var(--r);
+        background: var(--cream); border: 1.5px solid var(--border);
+        overflow: hidden; display: flex; align-items: center; justify-content: center;
+    }
+    .img-preview img { width: 100%; height: 100%; object-fit: cover; }
+    .img-preview .no-img { font-size: 13px; color: var(--text-muted); }
+
+    .crop-toolbar { display: flex; align-items: center; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+    .crop-hint { font-size: 12px; color: var(--text-muted); flex: 1; }
+
+    /* ===== TOAST ===== */
+    .toast-wrap {
+        position: fixed; bottom: 24px; right: 24px;
+        z-index: 3000; display: flex; flex-direction: column; gap: 8px;
+    }
+    .toast {
+        background: var(--text); color: #fff;
+        padding: 12px 18px; border-radius: var(--r);
+        font-size: 14px; box-shadow: var(--shadow-lg);
+        animation: toastIn 0.25s ease; min-width: 220px;
+        display: flex; align-items: center; gap: 8px;
+    }
+    .toast.success { background: var(--success); }
+    .toast.error   { background: var(--danger); }
+    .toast.warn    { background: #d97706; }
+    @keyframes toastIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; } }
+
+    /* ===== LOADING ===== */
+    .loading-cover {
+        position: fixed; inset: 0;
+        background: rgba(244,241,235,0.82);
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        z-index: 4000; gap: 14px;
+    }
+    .spinner {
+        width: 38px; height: 38px;
+        border: 3px solid var(--border); border-top-color: var(--olive);
+        border-radius: 50%; animation: spin 0.7s linear infinite;
+    }
+    .loading-cover p { font-size: 14px; color: var(--text-muted); }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 640px) {
+        .auth-card { padding: 32px 22px; }
+        .settings-grid { grid-template-columns: 1fr; }
+        .form-row { grid-template-columns: 1fr; }
+        .section-hd { flex-direction: column; }
+        .topbar { padding: 0 16px; }
+        .main { padding: 24px 16px; }
+        .modal-hd, .modal-body, .modal-ft { padding-left: 20px; padding-right: 20px; }
+    }
+    </style>
+</head>
+<body>
+
+<!-- ======================================================
+     LOADING COVER
+     ====================================================== -->
+<div class="loading-cover hidden" id="loadingCover">
+    <div class="spinner"></div>
+    <p id="loadingMsg">Loading…</p>
+</div>
+
+<!-- ======================================================
+     TOAST NOTIFICATIONS
+     ====================================================== -->
+<div class="toast-wrap" id="toastWrap"></div>
+
+<!-- ======================================================
+     SCREEN: SETUP (first-time configuration)
+     ====================================================== -->
+<div class="auth-screen" id="screenSetup">
+    <div class="auth-card">
+        <div class="auth-logo">
+            <span class="cross">✝</span>
+            <h1>Shalom Admin</h1>
+            <p>First-time setup — connect your GitHub repository</p>
+        </div>
+
+        <div class="step-bar">
+            <div class="step-bar-item active" id="stp1"></div>
+            <div class="step-bar-item"        id="stp2"></div>
+            <div class="step-bar-item"        id="stp3"></div>
+        </div>
+
+        <!-- Pane 1: GitHub Config -->
+        <div id="setupPane1">
+            <div class="form-group">
+                <label class="field-label">GitHub Personal Access Token</label>
+                <input type="password" id="s_token" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" autocomplete="off">
+                <span class="field-hint">
+                    Create at: GitHub → Settings → Developer settings → Personal access tokens → Fine-grained tokens.<br>
+                    Give it <strong>Contents: Read &amp; Write</strong> for your site repository.
+                </span>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="field-label">GitHub Username / Org</label>
+                    <input type="text" id="s_owner" placeholder="shalomretreatcentre2025">
+                </div>
+                <div class="form-group">
+                    <label class="field-label">Repository Name</label>
+                    <input type="text" id="s_repo" placeholder="shalomretreatcentre2025.github.io">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="field-label">Branch</label>
+                <input type="text" id="s_branch" placeholder="main" value="main">
+            </div>
+            <button class="btn btn-primary btn-full" id="btnConnect">Connect Repository →</button>
+        </div>
+
+        <!-- Pane 2: Set Password -->
+        <div id="setupPane2" class="hidden">
+            <p style="font-size:14px;color:var(--text-muted);margin-bottom:18px">
+                ✓ Repository connected! Now set your admin password.
+            </p>
+            <div class="form-group">
+                <label class="field-label">Admin Password</label>
+                <input type="password" id="s_pw1" placeholder="Choose a strong password (8+ characters)" autocomplete="new-password">
+            </div>
+            <div class="form-group">
+                <label class="field-label">Confirm Password</label>
+                <input type="password" id="s_pw2" placeholder="Repeat password" autocomplete="new-password">
+            </div>
+            <button class="btn btn-primary btn-full" id="btnSetPw">Set Password →</button>
+        </div>
+
+        <!-- Pane 3: Finalise -->
+        <div id="setupPane3" class="hidden">
+            <p style="font-size:14px;color:var(--text-muted);margin-bottom:18px">
+                Almost done! Enter your site's public URL so uploaded images get the correct address.
+            </p>
+            <div class="form-group">
+                <label class="field-label">Site Base URL</label>
+                <input type="text" id="s_baseurl" placeholder="https://www.shalomretreatcentre.ie">
+                <span class="field-hint">No trailing slash. Used to build image URLs when you upload photos.</span>
+            </div>
+            <button class="btn btn-primary btn-full" id="btnFinishSetup">Complete Setup ✓</button>
+        </div>
+    </div>
+</div>
+
+<!-- ======================================================
+     SCREEN: LOGIN
+     ====================================================== -->
+<div class="auth-screen hidden" id="screenLogin">
+    <div class="auth-card">
+        <div class="auth-logo">
+            <span class="cross">✝</span>
+            <h1>Shalom Admin</h1>
+            <p>Retreat Management Panel</p>
+        </div>
+        <div class="form-group">
+            <label class="field-label">Admin Password</label>
+            <input type="password" id="loginPw" placeholder="Enter your password" autocomplete="current-password">
+        </div>
+        <button class="btn btn-primary btn-full" id="btnLogin">Enter Admin Panel</button>
+        <p class="auth-link"><a href="#" id="linkResetConfig">Change GitHub settings / reconnect</a></p>
+    </div>
+</div>
+
+<!-- ======================================================
+     SCREEN: DASHBOARD
+     ====================================================== -->
+<div id="screenDashboard" class="hidden">
+
+    <!-- Top Bar -->
+    <div class="topbar">
+        <div class="topbar-brand">
+            <span class="cross">✝</span>
+            Shalom Admin
+            <span class="pipe">|</span>
+            <small>Retreat Manager</small>
+        </div>
+        <div class="topbar-actions">
+            <button class="btn btn-ghost btn-sm" id="btnToggleSettings">⚙ Settings</button>
+            <button class="btn btn-ghost btn-sm" id="btnLogout">Sign Out</button>
+        </div>
+    </div>
+
+    <div class="dashboard-body">
+        <div class="main">
+
+            <!-- Section Header -->
+            <div class="section-hd">
+                <div>
+                    <h2>Upcoming Retreats</h2>
+                    <p>Drag to reorder · Click Edit to change · Hit <strong>Save &amp; Publish</strong> to go live</p>
+                </div>
+                <div class="section-hd-actions">
+                    <button class="btn btn-primary" id="btnSaveAll">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                        Save &amp; Publish
+                    </button>
+                    <button class="btn btn-secondary" id="btnAdd">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                        Add Retreat
+                    </button>
+                </div>
+            </div>
+
+            <!-- Unsaved changes banner -->
+            <div class="unsaved-banner hidden" id="unsavedBanner">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                You have unsaved changes — click <strong style="margin:0 4px">Save &amp; Publish</strong> to update your website.
+            </div>
+
+            <!-- Retreat list -->
+            <div class="retreat-list" id="retreatList"></div>
+
+            <!-- Settings panel -->
+            <div class="settings-panel hidden" id="settingsPanel">
+                <h3>Settings</h3>
+                <div class="settings-grid">
+
+                    <div class="settings-col">
+                        <h4>Change Password</h4>
+                        <div class="form-group">
+                            <label class="field-label">Current Password</label>
+                            <input type="password" id="curPw">
+                        </div>
+                        <div class="form-group">
+                            <label class="field-label">New Password</label>
+                            <input type="password" id="newPw">
+                        </div>
+                        <div class="form-group">
+                            <label class="field-label">Confirm New Password</label>
+                            <input type="password" id="confPw">
+                        </div>
+                        <button class="btn btn-primary btn-sm" id="btnChangePw">Update Password</button>
+                    </div>
+
+                    <div class="settings-col">
+                        <h4>GitHub Configuration</h4>
+                        <div class="config-display" id="configDisplay"></div>
+                        <hr class="auth-divider">
+                        <div class="form-group">
+                            <label class="field-label">Update GitHub Token</label>
+                            <input type="password" id="newToken" placeholder="ghp_xxxxxxxxx">
+                        </div>
+                        <div class="form-group">
+                            <label class="field-label">Update Site Base URL</label>
+                            <input type="text" id="newBaseUrl" placeholder="https://www.shalomretreatcentre.ie">
+                        </div>
+                        <button class="btn btn-secondary btn-sm" id="btnUpdateConfig">Save Config Changes</button>
+                    </div>
+
+                </div>
+            </div>
+
+        </div><!-- /main -->
+    </div><!-- /dashboard-body -->
+</div><!-- /screenDashboard -->
+
+
+<!-- ======================================================
+     MODAL: Add / Edit Retreat
+     ====================================================== -->
+<div class="modal-overlay hidden" id="retreatModal">
+    <div class="modal">
+        <div class="modal-hd">
+            <h2 id="modalHeading">Add Retreat</h2>
+            <button class="btn btn-ghost btn-icon" id="btnModalClose" title="Close">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="modalEditIdx">
+
+            <!-- Name -->
+            <div class="form-group">
+                <label class="field-label">Retreat Name *</label>
+                <input type="text" id="f_name" placeholder="e.g. Silent Day Retreat: Holy Week Prep">
+            </div>
+
+            <div class="form-row">
+                <!-- Tag -->
+                <div class="form-group">
+                    <label class="field-label">Tag / Type *</label>
+                    <input type="text" id="f_tag" placeholder="e.g. Day Retreat">
+                    <span class="field-hint">Shown as a badge on the card</span>
+                </div>
+                <!-- Date -->
+                <div class="form-group">
+                    <label class="field-label">Date &amp; Time *</label>
+                    <input type="text" id="f_date" placeholder="e.g. Sat. 28th March 12pm–4pm">
+                </div>
+            </div>
+
+            <!-- Description -->
+            <div class="form-group">
+                <label class="field-label">Description *</label>
+                <textarea id="f_desc" placeholder="Brief description shown on the retreat card…" rows="3"></textarea>
+            </div>
+
+            <div class="form-row">
+                <!-- Sheet name -->
+                <div class="form-group">
+                    <label class="field-label">Booking Sheet Name</label>
+                    <input type="text" id="f_sheet" placeholder="e.g. Silent retreat 28th March">
+                    <span class="field-hint">Google Sheets tab name for registrations</span>
+                </div>
+                <!-- ID -->
+                <div class="form-group">
+                    <label class="field-label">Retreat ID</label>
+                    <input type="text" id="f_id" placeholder="Auto-generated if blank">
+                    <span class="field-hint">Letters &amp; numbers only — used in booking URLs</span>
+                </div>
+            </div>
+
+            <!-- ---- IMAGE SECTION ---- -->
+            <div style="margin-top:6px">
+                <label class="field-label" style="display:block;margin-bottom:10px">Retreat Image</label>
+                <div class="img-tabs">
+                    <button class="img-tab active" data-tab="url">🔗 Image URL</button>
+                    <button class="img-tab"        data-tab="upload">📷 Upload &amp; Crop</button>
+                </div>
+
+                <!-- URL tab -->
+                <div id="imgUrl">
+                    <div class="form-group">
+                        <input type="text" id="f_imgUrl" placeholder="https://example.com/photo.jpg">
+                        <span class="field-hint">Paste a direct image link (PostImg, Unsplash, Google Drive, etc.)</span>
+                    </div>
+                    <div class="img-preview" id="urlPreview">
+                        <span class="no-img">No image URL entered</span>
+                    </div>
+                </div>
+
+                <!-- Upload tab -->
+                <div id="imgUpload" class="hidden">
+                    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+                        <input type="file" id="fileInput" accept="image/*" style="display:none">
+                        <button class="btn btn-secondary btn-sm" id="btnPickFile">Choose Photo…</button>
+                        <span style="font-size:13px;color:var(--text-muted)" id="fileLabel">No file chosen</span>
+                    </div>
+
+                    <!-- Cropper -->
+                    <div class="cropper-container-wrap hidden" id="cropWrap">
+                        <img id="cropImg" src="" alt="">
+                    </div>
+
+                    <div class="crop-toolbar hidden" id="cropToolbar">
+                        <button class="btn btn-primary btn-sm" id="btnCropDone">✓ Use this crop</button>
+                        <button class="btn btn-ghost btn-sm"   id="btnCropReset">↺ Reset</button>
+                        <span class="crop-hint">Drag to move · Scroll to zoom · Drag corners to resize</span>
+                    </div>
+
+                    <!-- Cropped preview -->
+                    <div class="img-preview hidden" id="croppedPreview" style="margin-top:10px">
+                        <img id="croppedImg" src="" alt="Cropped preview">
+                    </div>
+                    <p class="field-hint" style="margin-top:6px">Cropped photo will upload to your repo when you save the retreat.</p>
+                </div>
+            </div>
+        </div>
+        <div class="modal-ft">
+            <button class="btn btn-ghost"    id="btnModalCancel">Cancel</button>
+            <button class="btn btn-primary"  id="btnModalSave">Save Retreat</button>
+        </div>
+    </div>
+</div>
+
+<!-- ======================================================
+     MODAL: Confirm Delete
+     ====================================================== -->
+<div class="modal-overlay hidden" id="deleteModal">
+    <div class="modal" style="max-width:400px">
+        <div class="modal-hd"><h2>Remove Retreat?</h2></div>
+        <div class="modal-body">
+            <p style="font-size:15px;color:var(--text-muted);line-height:1.6">
+                Remove <strong id="deleteNameLabel"></strong> from the list?<br>
+                <span style="font-size:13px">This won't go live until you click <em>Save &amp; Publish</em>.</span>
+            </p>
+        </div>
+        <div class="modal-ft">
+            <button class="btn btn-ghost"  id="btnDeleteCancel">Cancel</button>
+            <button class="btn btn-danger" id="btnDeleteConfirm">Remove</button>
+        </div>
+    </div>
+</div>
+
+
+<!-- ======================================================
+     SCRIPTS
+     ====================================================== -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
+<script>
+// =====================================================================
+//  SHALOM RETREAT CENTRE — ADMIN PANEL
+//  Hidden admin URL: /retreat-manager.html  (noindex, not linked)
+//  Data persistence: GitHub Contents API → retreats.json in repo
+//  Auth: SHA-256 password hash stored in admin-config.json on GitHub
+// =====================================================================
+
+'use strict';
+
+// ---- APP STATE ----
+let cfg        = null;   // { token, owner, repo, branch, baseUrl }
+let retreats   = [];     // working copy of retreat data
+let retSha     = null;   // GitHub SHA of retreats.json  (needed for PUT)
+let cfgSha     = null;   // GitHub SHA of admin-config.json
+let isDirty    = false;  // unsaved changes?
+let editIdx    = null;   // null = add new, number = editing that index
+let deleteIdx  = null;
+let imgTab     = 'url';  // 'url' | 'upload'
+let cropper    = null;
+let croppedBlob     = null;
+let croppedFileName = null;
+
+// ---- SETUP TEMP ----
+const setup = {};
+
+// ======================================================
+//  GITHUB API HELPERS
+// ======================================================
+const GH = 'https://api.github.com';
+
+function ghHeaders() {
+    return {
+        'Authorization': `Bearer ${cfg.token}`,
+        'Accept': 'application/vnd.github.v3+json',
+        'Content-Type': 'application/json'
+    };
+}
+
+/** GET a file from the repo. Returns null on 404. */
+async function ghGet(path) {
+    const url = `${GH}/repos/${cfg.owner}/${cfg.repo}/contents/${encodeURIComponent(path)}?ref=${cfg.branch}&t=${Date.now()}`;
+    const r = await fetch(url, { headers: ghHeaders() });
+    if (r.status === 404) return null;
+    if (!r.ok) {
+        const e = await r.json().catch(() => ({}));
+        throw new Error(e.message || `GitHub ${r.status}`);
+    }
+    return r.json();
+}
+
+/** PUT (create or update) a text file. */
+async function ghPut(path, textContent, sha, message) {
+    const url  = `${GH}/repos/${cfg.owner}/${cfg.repo}/contents/${encodeURIComponent(path)}`;
+    const body = {
+        message: message || `Update ${path}`,
+        content: strToBase64(textContent),
+        branch:  cfg.branch
+    };
+    if (sha) body.sha = sha;
+    const r = await fetch(url, { method: 'PUT', headers: ghHeaders(), body: JSON.stringify(body) });
+    if (!r.ok) {
+        const e = await r.json().catch(() => ({}));
+        throw new Error(e.message || `GitHub PUT failed: ${r.status}`);
+    }
+    return r.json();
+}
+
+/** PUT a binary file (base64 content already encoded). */
+async function ghPutBinary(path, base64Content, sha, message) {
+    const url  = `${GH}/repos/${cfg.owner}/${cfg.repo}/contents/${encodeURIComponent(path)}`;
+    const body = {
+        message: message || `Upload ${path}`,
+        content: base64Content,
+        branch:  cfg.branch
+    };
+    if (sha) body.sha = sha;
+    const r = await fetch(url, { method: 'PUT', headers: ghHeaders(), body: JSON.stringify(body) });
+    if (!r.ok) {
+        const e = await r.json().catch(() => ({}));
+        throw new Error(e.message || `GitHub PUT failed: ${r.status}`);
+    }
+    return r.json();
+}
+
+// ======================================================
+//  ENCODING HELPERS
+// ======================================================
+
+/** UTF-8 safe string → base64 (for GitHub API) */
+function strToBase64(str) {
+    const bytes = new TextEncoder().encode(str);
+    let bin = '';
+    bytes.forEach(b => bin += String.fromCharCode(b));
+    return btoa(bin);
+}
+
+/** Decode GitHub's base64 content (UTF-8 safe) */
+function ghBase64Decode(ghContent) {
+    const bin   = atob(ghContent.replace(/\n/g, ''));
+    const bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    return new TextDecoder().decode(bytes);
+}
+
+/** SHA-256 of a string → hex string */
+async function sha256(str) {
+    const buf  = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+// ======================================================
+//  UI HELPERS
+// ======================================================
+
+function loading(show, msg) {
+    const el = document.getElementById('loadingCover');
+    el.classList.toggle('hidden', !show);
+    if (msg) document.getElementById('loadingMsg').textContent = msg;
+}
+
+function toast(msg, type = '') {
+    const wrap = document.getElementById('toastWrap');
+    const t    = document.createElement('div');
+    t.className = 'toast ' + type;
+    const icon = type === 'success' ? '✓' : type === 'error' ? '✗' : type === 'warn' ? '⚠' : 'ℹ';
+    t.innerHTML = `<span>${icon}</span> ${msg}`;
+    wrap.appendChild(t);
+    setTimeout(() => t.remove(), 4500);
+}
+
+function esc(str) {
+    if (!str) return '';
+    return String(str)
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function showScreen(id) {
+    ['screenSetup','screenLogin','screenDashboard'].forEach(s =>
+        document.getElementById(s).classList.toggle('hidden', s !== id));
+}
+
+// ======================================================
+//  SETUP FLOW
+// ======================================================
+
+function showSetupPane(n) {
+    [1,2,3].forEach(i => {
+        document.getElementById(`setupPane${i}`).classList.toggle('hidden', i !== n);
+        const bar = document.getElementById(`stp${i}`);
+        bar.className = 'step-bar-item' + (i < n ? ' done' : i === n ? ' active' : '');
+    });
+}
+
+/** On page load: check localStorage for saved config */
+async function initApp() {
+    const saved = localStorage.getItem('shalomAdminCfg');
+    if (saved) {
+        cfg = JSON.parse(saved);
+        showScreen('screenLogin');
+    } else {
+        showScreen('screenSetup');
+        showSetupPane(1);
+    }
+}
+
+// Step 1 — Connect repo
+document.getElementById('btnConnect').addEventListener('click', async () => {
+    const token  = document.getElementById('s_token').value.trim();
+    const owner  = document.getElementById('s_owner').value.trim();
+    const repo   = document.getElementById('s_repo').value.trim();
+    const branch = document.getElementById('s_branch').value.trim() || 'main';
+    if (!token || !owner || !repo) { toast('Please fill in all fields.', 'error'); return; }
+
+    loading(true, 'Connecting to GitHub…');
+    try {
+        const r = await fetch(`${GH}/repos/${owner}/${repo}`, {
+            headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github.v3+json' }
+        });
+        if (!r.ok) throw new Error('Could not reach the repository. Check your token and repo name.');
+        Object.assign(setup, { token, owner, repo, branch });
+        showSetupPane(2);
+        toast('Repository connected!', 'success');
+    } catch(e) {
+        toast(e.message, 'error');
+    } finally {
+        loading(false);
+    }
+});
+
+// Step 2 — Set password
+document.getElementById('btnSetPw').addEventListener('click', async () => {
+    const pw1 = document.getElementById('s_pw1').value;
+    const pw2 = document.getElementById('s_pw2').value;
+    if (!pw1)          { toast('Please enter a password.', 'error'); return; }
+    if (pw1 !== pw2)   { toast('Passwords do not match.', 'error');  return; }
+    if (pw1.length < 8){ toast('Password must be at least 8 characters.', 'error'); return; }
+
+    setup.passwordHash = await sha256(pw1);
+
+    // Pre-fill base URL from repo name
+    const isUserSite = setup.repo === `${setup.owner}.github.io`;
+    document.getElementById('s_baseurl').value = isUserSite
+        ? `https://${setup.owner}.github.io`
+        : `https://${setup.owner}.github.io/${setup.repo}`;
+
+    showSetupPane(3);
+});
+
+// Step 3 — Finalise
+document.getElementById('btnFinishSetup').addEventListener('click', async () => {
+    const baseUrl = document.getElementById('s_baseurl').value.trim().replace(/\/$/, '');
+    cfg = { token: setup.token, owner: setup.owner, repo: setup.repo, branch: setup.branch, baseUrl };
+
+    loading(true, 'Creating admin config…');
+    try {
+        // Save admin-config.json
+        const existing = await ghGet('admin-config.json');
+        const content  = JSON.stringify({ passwordHash: setup.passwordHash, baseUrl }, null, 2);
+        const result   = await ghPut('admin-config.json', content, existing?.sha || null, 'Add admin config [shalom-cms]');
+        cfgSha = result.content.sha;
+
+        // Create retreats.json if it doesn't exist
+        const existingRetreats = await ghGet('retreats.json');
+        if (!existingRetreats) {
+            await ghPut('retreats.json', '[]', null, 'Create retreats.json [shalom-cms]');
+        }
+
+        localStorage.setItem('shalomAdminCfg', JSON.stringify(cfg));
+        toast('Setup complete! Please log in.', 'success');
+        showScreen('screenLogin');
+    } catch(e) {
+        toast('Setup failed: ' + e.message, 'error');
+    } finally {
+        loading(false);
+    }
+});
+
+// ======================================================
+//  LOGIN
+// ======================================================
+
+document.getElementById('loginPw').addEventListener('keydown', e => {
+    if (e.key === 'Enter') document.getElementById('btnLogin').click();
+});
+
+document.getElementById('btnLogin').addEventListener('click', async () => {
+    const pw = document.getElementById('loginPw').value;
+    if (!pw) { toast('Enter your password.', 'error'); return; }
+
+    loading(true, 'Verifying…');
+    try {
+        // Fetch admin-config from raw GitHub (public, no auth needed)
+        const rawUrl = `https://raw.githubusercontent.com/${cfg.owner}/${cfg.repo}/${cfg.branch}/admin-config.json?t=${Date.now()}`;
+        const r = await fetch(rawUrl);
+        if (!r.ok) throw new Error('Could not load admin config. Try setup again.');
+        const adminCfg = await r.json();
+
+        const hash = await sha256(pw);
+        if (hash !== adminCfg.passwordHash) {
+            toast('Incorrect password.', 'error');
+            document.getElementById('loginPw').value = '';
+            loading(false);
+            return;
+        }
+
+        if (adminCfg.baseUrl) cfg.baseUrl = adminCfg.baseUrl;
+        localStorage.setItem('shalomAdminCfg', JSON.stringify(cfg));
+
+        await loadDashboard();
+        showScreen('screenDashboard');
+    } catch(e) {
+        toast(e.message, 'error');
+    } finally {
+        loading(false);
+    }
+});
+
+document.getElementById('linkResetConfig').addEventListener('click', e => {
+    e.preventDefault();
+    if (!confirm('This will clear your local GitHub settings. You will need to reconnect. Continue?')) return;
+    localStorage.removeItem('shalomAdminCfg');
+    cfg = null;
+    showScreen('screenSetup');
+    showSetupPane(1);
+});
+
+// ======================================================
+//  DASHBOARD
+// ======================================================
+
+async function loadDashboard() {
+    loading(true, 'Loading retreats…');
+    try {
+        const file = await ghGet('retreats.json');
+        if (file) {
+            retreats = JSON.parse(ghBase64Decode(file.content));
+            retSha   = file.sha;
+        } else {
+            retreats = [];
+            retSha   = null;
+        }
+        renderList();
+        refreshConfigDisplay();
+    } catch(e) {
+        toast('Could not load retreats: ' + e.message, 'error');
+    } finally {
+        loading(false);
+    }
+}
+
+// ---- Render the drag-drop list ----
+function renderList() {
+    const list = document.getElementById('retreatList');
+    list.innerHTML = '';
+
+    if (retreats.length === 0) {
+        list.innerHTML = `
+            <div class="empty-state">
+                <h3>No retreats yet</h3>
+                <p>Add your first retreat using the button above.</p>
+                <button class="btn btn-primary" onclick="openAdd()">+ Add Retreat</button>
+            </div>`;
+        return;
+    }
+
+    retreats.forEach((r, i) => {
+        const item = document.createElement('div');
+        item.className = 'retreat-item';
+        item.dataset.idx = i;
+        item.innerHTML = `
+            <div class="drag-handle" title="Drag to reorder">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <circle cx="9" cy="6"  r="1.2" fill="currentColor"/>
+                    <circle cx="15" cy="6" r="1.2" fill="currentColor"/>
+                    <circle cx="9" cy="12" r="1.2" fill="currentColor"/>
+                    <circle cx="15" cy="12" r="1.2" fill="currentColor"/>
+                    <circle cx="9" cy="18" r="1.2" fill="currentColor"/>
+                    <circle cx="15" cy="18" r="1.2" fill="currentColor"/>
+                </svg>
+            </div>
+            ${r.image
+                ? `<img class="retreat-thumb" src="${esc(r.image)}" alt="${esc(r.name)}" onerror="this.style.display='none'">`
+                : `<div class="retreat-thumb-placeholder">
+                       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                           <rect x="3" y="3" width="18" height="18" rx="2"/>
+                           <circle cx="8.5" cy="8.5" r="1.5"/>
+                           <polyline points="21 15 16 10 5 21"/>
+                       </svg>
+                   </div>`
+            }
+            <div class="retreat-meta">
+                <div class="retreat-meta-name">${esc(r.name)}</div>
+                <div class="retreat-meta-date">${esc(r.date || '')}</div>
+                <span class="retreat-meta-tag">${esc(r.tag || '')}</span>
+            </div>
+            <div class="retreat-actions">
+                <button class="btn btn-secondary btn-sm" onclick="openEdit(${i})">Edit</button>
+                <button class="btn btn-ghost btn-sm" style="color:var(--danger)" onclick="askDelete(${i})">Remove</button>
+            </div>`;
+        list.appendChild(item);
+    });
+
+    // Destroy previous sortable if any
+    if (window.__sortable) window.__sortable.destroy();
+    window.__sortable = Sortable.create(list, {
+        handle:      '.drag-handle',
+        animation:   180,
+        ghostClass:  'sortable-ghost',
+        chosenClass: 'sortable-chosen',
+        onEnd(e) {
+            const moved = retreats.splice(e.oldIndex, 1)[0];
+            retreats.splice(e.newIndex, 0, moved);
+            markDirty();
+        }
+    });
+}
+
+function markDirty() {
+    isDirty = true;
+    document.getElementById('unsavedBanner').classList.remove('hidden');
+}
+
+// ---- Save & Publish ----
+document.getElementById('btnSaveAll').addEventListener('click', async () => {
+    loading(true, 'Publishing to website…');
+    try {
+        const json   = JSON.stringify(retreats, null, 2);
+        const result = await ghPut('retreats.json', json, retSha, 'Update retreat listings [shalom-cms]');
+        retSha  = result.content.sha;
+        isDirty = false;
+        document.getElementById('unsavedBanner').classList.add('hidden');
+        toast('Published! Your website will update in about a minute.', 'success');
+    } catch(e) {
+        toast('Save failed: ' + e.message, 'error');
+    } finally {
+        loading(false);
+    }
+});
+
+// ---- Add / Edit ----
+document.getElementById('btnAdd').addEventListener('click', openAdd);
+
+function openAdd() {
+    editIdx = null;
+    document.getElementById('modalHeading').textContent = 'Add Retreat';
+    ['f_name','f_tag','f_date','f_desc','f_sheet','f_id','f_imgUrl'].forEach(id => {
+        document.getElementById(id).value = '';
+    });
+    document.getElementById('modalEditIdx').value = '';
+    resetImgSection();
+    switchImgTab('url');
+    document.getElementById('retreatModal').classList.remove('hidden');
+    document.getElementById('f_name').focus();
+}
+
+function openEdit(i) {
+    editIdx = i;
+    const r = retreats[i];
+    document.getElementById('modalHeading').textContent = 'Edit Retreat';
+    document.getElementById('modalEditIdx').value = i;
+    document.getElementById('f_name').value   = r.name        || '';
+    document.getElementById('f_tag').value    = r.tag         || '';
+    document.getElementById('f_date').value   = r.date        || '';
+    document.getElementById('f_desc').value   = r.description || '';
+    document.getElementById('f_sheet').value  = r.sheetName   || '';
+    document.getElementById('f_id').value     = r.id          || '';
+    document.getElementById('f_imgUrl').value = r.image       || '';
+    resetImgSection();
+    switchImgTab('url');
+    updateUrlPreview();
+    document.getElementById('retreatModal').classList.remove('hidden');
+}
+
+function closeModal() {
+    document.getElementById('retreatModal').classList.add('hidden');
+    if (cropper) { cropper.destroy(); cropper = null; }
+    croppedBlob = null; croppedFileName = null;
+}
+
+document.getElementById('btnModalClose').addEventListener('click', closeModal);
+document.getElementById('btnModalCancel').addEventListener('click', closeModal);
+document.getElementById('retreatModal').addEventListener('click', e => {
+    if (e.target.id === 'retreatModal') closeModal();
+});
+
+document.getElementById('btnModalSave').addEventListener('click', async () => {
+    const name = document.getElementById('f_name').value.trim();
+    const tag  = document.getElementById('f_tag').value.trim();
+    const date = document.getElementById('f_date').value.trim();
+    const desc = document.getElementById('f_desc').value.trim();
+    const sheet= document.getElementById('f_sheet').value.trim();
+    let   id   = document.getElementById('f_id').value.trim();
+
+    if (!name || !date || !desc) {
+        toast('Please fill in Name, Date, and Description.', 'error'); return;
+    }
+
+    // Auto-generate ID
+    if (!id) {
+        id = name.toLowerCase().replace(/[^a-z0-9]/g, '').substring(0, 20)
+           + Date.now().toString().slice(-4);
+    }
+
+    let imageUrl = '';
+
+    if (imgTab === 'url') {
+        imageUrl = document.getElementById('f_imgUrl').value.trim();
+    } else {
+        if (croppedBlob) {
+            loading(true, 'Uploading photo…');
+            try {
+                imageUrl = await uploadImage(croppedBlob, croppedFileName || id + '.jpg');
+            } catch(e) {
+                toast('Image upload failed: ' + e.message, 'error');
+                loading(false); return;
+            } finally {
+                loading(false);
+            }
+        } else if (editIdx !== null) {
+            imageUrl = retreats[editIdx].image || '';
+        }
+    }
+
+    const retreat = { id, name, tag, date, description: desc, image: imageUrl, sheetName: sheet };
+
+    if (editIdx === null) {
+        retreats.push(retreat);
+        toast('Retreat added!', 'success');
+    } else {
+        retreats[editIdx] = retreat;
+        toast('Retreat updated!', 'success');
+    }
+
+    renderList();
+    markDirty();
+    closeModal();
+});
+
+// ======================================================
+//  IMAGE HANDLING
+// ======================================================
+
+function switchImgTab(tab) {
+    imgTab = tab;
+    document.querySelectorAll('.img-tab').forEach(btn =>
+        btn.classList.toggle('active', btn.dataset.tab === tab));
+    document.getElementById('imgUrl').classList.toggle('hidden', tab !== 'url');
+    document.getElementById('imgUpload').classList.toggle('hidden', tab !== 'upload');
+}
+
+document.querySelectorAll('.img-tab').forEach(btn =>
+    btn.addEventListener('click', () => switchImgTab(btn.dataset.tab)));
+
+function resetImgSection() {
+    if (cropper) { cropper.destroy(); cropper = null; }
+    croppedBlob = null; croppedFileName = null;
+    document.getElementById('cropWrap').classList.add('hidden');
+    document.getElementById('cropToolbar').classList.add('hidden');
+    document.getElementById('croppedPreview').classList.add('hidden');
+    document.getElementById('fileLabel').textContent = 'No file chosen';
+    document.getElementById('fileInput').value = '';
+}
+
+// URL preview
+document.getElementById('f_imgUrl').addEventListener('input', updateUrlPreview);
+function updateUrlPreview() {
+    const url = document.getElementById('f_imgUrl').value.trim();
+    const box = document.getElementById('urlPreview');
+    if (url) {
+        box.innerHTML = `<img src="${esc(url)}" alt="Preview"
+            onerror="this.parentElement.innerHTML='<span class=\\'no-img\\'>Could not load image — check the URL</span>'">`;
+    } else {
+        box.innerHTML = '<span class="no-img">No image URL entered</span>';
+    }
+}
+
+// File picker
+document.getElementById('btnPickFile').addEventListener('click', () =>
+    document.getElementById('fileInput').click());
+
+document.getElementById('fileInput').addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    croppedFileName = file.name;
+    document.getElementById('fileLabel').textContent = file.name;
+    if (cropper) { cropper.destroy(); cropper = null; }
+    croppedBlob = null;
+
+    const reader = new FileReader();
+    reader.onload = ev => {
+        const wrap = document.getElementById('cropWrap');
+        const img  = document.getElementById('cropImg');
+        img.src = ev.target.result;
+        wrap.classList.remove('hidden');
+        document.getElementById('cropToolbar').classList.remove('hidden');
+        document.getElementById('croppedPreview').classList.add('hidden');
+
+        img.onload = () => {
+            cropper = new Cropper(img, {
+                aspectRatio:   16 / 9,
+                viewMode:      1,
+                autoCropArea:  0.85,
+                movable:       true,
+                zoomable:      true,
+                rotatable:     false,
+                scalable:      false,
+            });
+        };
+    };
+    reader.readAsDataURL(file);
+});
+
+// Confirm crop
+document.getElementById('btnCropDone').addEventListener('click', () => {
+    if (!cropper) return;
+    const canvas = cropper.getCroppedCanvas({ width: 800, height: 450, imageSmoothingQuality: 'high' });
+    canvas.toBlob(blob => {
+        croppedBlob = blob;
+        const url   = URL.createObjectURL(blob);
+        const prev  = document.getElementById('croppedPreview');
+        document.getElementById('croppedImg').src = url;
+        prev.classList.remove('hidden');
+        toast('Crop confirmed! It will upload when you save.', 'success');
+    }, 'image/jpeg', 0.92);
+});
+
+// Reset crop
+document.getElementById('btnCropReset').addEventListener('click', () => {
+    if (cropper) cropper.reset();
+    croppedBlob = null;
+    document.getElementById('croppedPreview').classList.add('hidden');
+});
+
+/** Upload a blob to the GitHub repo, return the public image URL. */
+async function uploadImage(blob, filename) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = async () => {
+            try {
+                const base64   = reader.result.split(',')[1];
+                const safeName = filename.replace(/[^a-zA-Z0-9._-]/g, '-').toLowerCase();
+                const ts       = Date.now();
+                const path     = `retreat-images/${ts}-${safeName}`;
+
+                // Check for existing file with same path (unlikely but safe)
+                const existing = await ghGet(path);
+                await ghPutBinary(path, base64, existing?.sha || null, `Upload retreat image [shalom-cms]`);
+
+                resolve(`${cfg.baseUrl}/${path}`);
+            } catch(e) {
+                reject(e);
+            }
+        };
+        reader.onerror = () => reject(new Error('Failed to read image file.'));
+        reader.readAsDataURL(blob);
+    });
+}
+
+// ======================================================
+//  DELETE
+// ======================================================
+
+function askDelete(i) {
+    deleteIdx = i;
+    document.getElementById('deleteNameLabel').textContent = retreats[i].name;
+    document.getElementById('deleteModal').classList.remove('hidden');
+}
+
+document.getElementById('btnDeleteCancel').addEventListener('click', () => {
+    document.getElementById('deleteModal').classList.add('hidden');
+    deleteIdx = null;
+});
+document.getElementById('deleteModal').addEventListener('click', e => {
+    if (e.target.id === 'deleteModal') {
+        document.getElementById('deleteModal').classList.add('hidden');
+        deleteIdx = null;
+    }
+});
+document.getElementById('btnDeleteConfirm').addEventListener('click', () => {
+    if (deleteIdx === null) return;
+    retreats.splice(deleteIdx, 1);
+    renderList();
+    markDirty();
+    document.getElementById('deleteModal').classList.add('hidden');
+    toast('Retreat removed. Hit Save & Publish to go live.', 'warn');
+    deleteIdx = null;
+});
+
+// ======================================================
+//  SETTINGS
+// ======================================================
+
+document.getElementById('btnToggleSettings').addEventListener('click', () => {
+    document.getElementById('settingsPanel').classList.toggle('hidden');
+});
+
+document.getElementById('btnLogout').addEventListener('click', () => {
+    if (isDirty && !confirm('You have unsaved changes. Log out anyway?')) return;
+    showScreen('screenLogin');
+    document.getElementById('loginPw').value = '';
+    isDirty = false;
+});
+
+function refreshConfigDisplay() {
+    document.getElementById('configDisplay').innerHTML = `
+        Owner: <strong>${esc(cfg.owner)}</strong><br>
+        Repo: <strong>${esc(cfg.repo)}</strong><br>
+        Branch: <strong>${esc(cfg.branch)}</strong><br>
+        Base URL: <strong>${esc(cfg.baseUrl || '(not set)')}</strong><br>
+        Token: <strong>${cfg.token.substring(0,8)}••••</strong>`;
+}
+
+// Change password
+document.getElementById('btnChangePw').addEventListener('click', async () => {
+    const cur  = document.getElementById('curPw').value;
+    const nw   = document.getElementById('newPw').value;
+    const conf = document.getElementById('confPw').value;
+    if (!cur || !nw)   { toast('Fill in all password fields.', 'error'); return; }
+    if (nw !== conf)   { toast('New passwords do not match.', 'error');  return; }
+    if (nw.length < 8) { toast('Password must be at least 8 characters.', 'error'); return; }
+
+    loading(true, 'Updating password…');
+    try {
+        const rawUrl = `https://raw.githubusercontent.com/${cfg.owner}/${cfg.repo}/${cfg.branch}/admin-config.json?t=${Date.now()}`;
+        const r = await fetch(rawUrl);
+        const adminCfg = await r.json();
+
+        if (await sha256(cur) !== adminCfg.passwordHash) {
+            toast('Current password is incorrect.', 'error'); loading(false); return;
+        }
+
+        const newHash = await sha256(nw);
+        const file    = await ghGet('admin-config.json');
+        const content = JSON.stringify({ ...adminCfg, passwordHash: newHash }, null, 2);
+        await ghPut('admin-config.json', content, file.sha, 'Update admin password [shalom-cms]');
+
+        ['curPw','newPw','confPw'].forEach(id => document.getElementById(id).value = '');
+        toast('Password updated!', 'success');
+    } catch(e) {
+        toast('Failed to update password: ' + e.message, 'error');
+    } finally {
+        loading(false);
+    }
+});
+
+// Update token / baseUrl
+document.getElementById('btnUpdateConfig').addEventListener('click', () => {
+    const newToken   = document.getElementById('newToken').value.trim();
+    const newBaseUrl = document.getElementById('newBaseUrl').value.trim().replace(/\/$/, '');
+    if (newToken)   cfg.token   = newToken;
+    if (newBaseUrl) cfg.baseUrl = newBaseUrl;
+    localStorage.setItem('shalomAdminCfg', JSON.stringify(cfg));
+    document.getElementById('newToken').value   = '';
+    document.getElementById('newBaseUrl').value = '';
+    refreshConfigDisplay();
+    toast('Configuration saved.', 'success');
+});
+
+// ======================================================
+//  BOOT
+// ======================================================
+initApp();
+</script>
+</body>
+</html>

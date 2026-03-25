@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retreat Registration - The Shalom Retreat Centre</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">
+                <img src="Shalom_logo_transparent.png" alt="Shalom Retreat Centre">
+            </a>
+            <ul class="nav-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="bookings.html">Retreats</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+            <div class="hamburger">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+    </nav>
+
+
+    <!-- Animated Background -->
+    <div class="background-animation subtle">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+        <div class="orb orb-4"></div>
+        <div class="orb orb-5"></div>
+        <div class="orb orb-6"></div>
+    </div>
+
+    <!-- Retreat Hero Image — populated by script.js from retreatsData -->
+    <div id="retreatHero" class="retreat-hero" style="display:none;">
+        <img id="retreatHeroImg" src="" alt="">
+        <div class="retreat-hero-gradient"></div>
+        <div class="retreat-hero-info">
+            <div id="retreatHeroTag" class="retreat-hero-tag"></div>
+            <h1 id="retreatHeroTitle"></h1>
+            <div class="retreat-hero-meta">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                </svg>
+                <span id="retreatHeroDate"></span>
+            </div>
+            <p id="retreatHeroDescription" class="retreat-hero-description"></p>
+        </div>
+    </div>
+
+    <!-- Registration Section -->
+    <section class="registration-section">
+        <div class="container">
+            <div class="registration-content fade-in">
+                <a href="bookings.html" class="back-link">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <line x1="19" y1="12" x2="5" y2="12"></line>
+                        <polyline points="12 19 5 12 12 5"></polyline>
+                    </svg>
+                    Back to Retreats
+                </a>
+
+                <h1 id="retreatTitle">Retreat Registration</h1>
+                <p class="subtitle">Please fill out the form below to register for this retreat.</p>
+
+                <form id="registrationForm" class="registration-form">
+                    <input type="hidden" id="retreatName" name="retreatName">
+                    <input type="hidden" id="sheetName" name="sheetName">
+
+                    <h3>Personal Information</h3>
+                    <div class="form-group">
+                        <label for="Name">Name *</label>
+                        <input type="text" id="Name" name="Name" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="email">Email Address *</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Phone Number *</label>
+                            <input type="tel" id="phone" name="phone" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="address">Address</label>
+                        <input type="text" id="address" name="address">
+                    </div>
+
+                    <h3>Retreat Details</h3>
+                    <div class="form-group">
+                        <label for="medical">Medical Information</label>
+                        <textarea id="medical" name="medical" rows="3" placeholder="Any medical conditions we should be aware of?"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="notes">Additional Notes or Questions</label>
+                        <textarea id="notes" name="notes" rows="4" placeholder="Anything else you'd like us to know?"></textarea>
+                    </div>
+
+                    <button type="submit" class="btn-primary">Submit Registration</button>
+                </form>
+
+                <div class="success-message" id="successMessage">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                    Thank you for registering! We&#8217;ll be in touch soon with more details.
+                </div>
+                <div class="error-message" id="errorMessage">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+                    <span>Oops! Something went wrong. Please try again.</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+<!-- Footer -->
+    <footer class="footer">
+        <div class="footer-main">
+            <div class="container">
+                <div class="footer-grid">
+
+                    <!-- About col -->
+                    <div class="footer-col">
+                        <h4>The Shalom Retreat Centre</h4>
+                        <p>A Catholic Retreat Centre in Charleville Parish, dedicated to peace, prayer, and growth in faith.</p>
+                        <p class="footer-diocese">
+                            Part of the <a href="https://www.cloynediocese.ie" target="_blank" rel="noopener">Diocese of Cloyne</a>
+                        </p>
+                    </div>
+
+                    <!-- Quick links col -->
+                    <div class="footer-col">
+                        <h4>Quick Links</h4>
+                        <ul class="footer-links">
+                            <li><a href="index.html">Home</a></li>
+                            <li><a href="bookings.html">Upcoming Retreats</a></li>
+                            <li><a href="about.html">About Us</a></li>
+                            <li><a href="contact.html">Contact</a></li>
+                            <li><a href="https://www.cloynediocese.ie" target="_blank" rel="noopener">Cloyne Diocese</a></li>
+                            <li><a href="https://www.charlevilleparish.ie" target="_blank" rel="noopener">Charleville Parish</a></li>
+                        </ul>
+                    </div>
+
+                    <!-- Contact col -->
+                    <div class="footer-col">
+                        <h4>Contact Us</h4>
+                        <ul class="footer-contact-list">
+                            <li>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                                <span>Main Street, Charleville,<br>Co. Cork, P56 YP79</span>
+                            </li>
+                            <li>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.21 12 19.79 19.79 0 0 1 1.14 3.38 2 2 0 0 1 3.12 1h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                                <a href="tel:+353834405359">+353 (0) 83 440 5359</a>
+                            </li>
+                            <li>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                                <a href="mailto:info@shalomcentre.ie">Info@shalomcentre.ie</a>
+                            </li>
+                            <li>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                                <a href="mailto:bookings@shalomcentre.ie">Bookings@shalomcentre.ie</a>
+                            </li>
+                            <li>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                                <span>Mon&ndash;Fri: 9:30am &ndash; 4:30pm</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="container">
+                <p>&copy; 2026 The Shalom Retreat Centre. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- script.js handles retreatInfo population via URL param -->
+    <script src="script.js"></script>
+</body>
+</html>
