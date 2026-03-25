@@ -25,5 +25,14 @@
     "image": "https://i.postimg.cc/qvdzcFf7/mother-daughter-retreat-mini.png?w=800&q=80",
     "description": "A Day retreat for mothers and daughters with talks, Adoration, tea coffee & packed lunch, and Holy Mass.",
     "sheetName": "Mother Daughter"
+  },
+  {
+    "id": "songofbernadette",
+    "name": "Song of Bernadette",
+    "tag": "Movie night",
+    "date": "6:00pm Wed. 15th April",
+    "description": "To celebrate the feast of St. Bernadette, we are screening her movie 'Song of Bernadette' at the Shalom Retreat Centre at 6:30pm, with rosary and devotions at 6:00pm. End of night 9:45pm",
+    "image": "https://shalomretreatcentre2025.github.io/shalomexperimentalsite/retreat-images/1774445807553-the-real-st.-brigid.png",
+    "sheetName": "Song of Bernadette 15th April"
   }
 ]
