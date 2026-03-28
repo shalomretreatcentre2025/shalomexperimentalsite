@@ -614,6 +614,19 @@
                     <p class="field-hint" style="margin-top:6px">Cropped photo will upload to your repo when you save the retreat.</p>
                 </div>
             </div>
+
+            <!-- ---- IMAGE FOCUS ---- -->
+            <div class="form-group" style="margin-top:14px">
+                <label class="field-label">Image Focus Point</label>
+                <select id="f_imgFocus" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-size:14px;background:var(--white);color:var(--text-dark)">
+                    <option value="center">Centre (default)</option>
+                    <option value="top">Top — show upper part of image</option>
+                    <option value="bottom">Bottom — show lower part of image</option>
+                    <option value="left center">Left — show left side of image</option>
+                    <option value="right center">Right — show right side of image</option>
+                </select>
+                <span class="field-hint">Controls which part of the image is visible in cards &amp; the retreat page header.</span>
+            </div>
         </div>
         <div class="modal-ft">
             <button class="btn btn-ghost"    id="btnModalCancel">Cancel</button>
@@ -1057,6 +1070,7 @@ function openAdd() {
     ['f_name','f_tag','f_date','f_desc','f_sheet','f_id','f_imgUrl'].forEach(id => {
         document.getElementById(id).value = '';
     });
+    document.getElementById('f_imgFocus').value = 'center';
     document.getElementById('modalEditIdx').value = '';
     resetImgSection();
     switchImgTab('url');
@@ -1076,6 +1090,7 @@ function openEdit(i) {
     document.getElementById('f_sheet').value  = r.sheetName   || '';
     document.getElementById('f_id').value     = r.id          || '';
     document.getElementById('f_imgUrl').value = r.image       || '';
+    document.getElementById('f_imgFocus').value = r.imageFocus || 'center';
     resetImgSection();
     switchImgTab('url');
     updateUrlPreview();
@@ -1132,7 +1147,7 @@ document.getElementById('btnModalSave').addEventListener('click', async () => {
         }
     }
 
-    const retreat = { id, name, tag, date, description: desc, image: imageUrl, sheetName: sheet };
+    const retreat = { id, name, tag, date, description: desc, image: imageUrl, imageFocus: document.getElementById('f_imgFocus').value || 'center', sheetName: sheet };
 
     if (editIdx === null) {
         retreats.push(retreat);

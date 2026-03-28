@@ -72,7 +72,7 @@ function renderRetreatCards(retreats, containerId, limit) {
         card.innerHTML =
             '<div class="retreat-image">' +
                 '<div class="retreat-tag">' + retreat.tag + '</div>' +
-                '<img src="' + retreat.image + '" alt="' + retreat.name + '" loading="lazy">' +
+                '<img src="' + retreat.image + '" alt="' + retreat.name + '" loading="lazy" style="object-position:' + (retreat.imageFocus || 'center') + '">' +
             '</div>' +
             '<div class="retreat-content">' +
                 '<h3>' + retreat.name + '</h3>' +
@@ -156,6 +156,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (hero && retreat) {
             document.getElementById('retreatHeroImg').src         = retreat.image;
             document.getElementById('retreatHeroImg').alt         = retreat.name;
+            document.getElementById('retreatHeroImg').style.objectPosition = retreat.imageFocus || 'center';
             document.getElementById('retreatHeroTag').textContent = retreat.tag;
             document.getElementById('retreatHeroTitle').textContent       = retreat.name;
             document.getElementById('retreatHeroDate').textContent        = retreat.date;
