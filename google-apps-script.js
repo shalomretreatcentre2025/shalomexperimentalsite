@@ -1,221 +1,255 @@
 /**
- * Shalom Retreat Centre - Improved Google Sheets Handler
- * 
- * This script automatically organizes form submissions into different tabs
- * based on the retreat name. Each retreat gets its own organized tab!
- * 
- * HOW TO USE:
- * 1. Open your Google Sheet
- * 2. Extensions → Apps Script
- * 3. Delete any existing code
- * 4. Paste this entire code
- * 5. Click "Deploy" → "New deployment"
- * 6. Type: Web app
- * 7. Execute as: Me
- * 8. Who has access: Anyone
- * 9. Click "Deploy" and copy the URL
- * 10. Update the URL in your website's script.js file
+ * Shalom Retreat Centre — Google Sheets Handler
+ *
+ * CHANGES vs. original:
+ *  1. Timestamp format  → DD/MM/YYYY HH:MM  (no seconds)
+ *  2. Column order      → Timestamp, Name, Phone, Email, Message
+ *  3. Phone format      → Irish local 08X XXX XXXX  (no +353)
+ *  4. Admin SMS         → Twilio notification on every booking
+ *  5. User email        → MailApp confirmation email after every submission
+ *
+ * ─────────────────────────────────────────────
+ *  SETUP — Script Properties
+ *  (Extensions → Apps Script → Project Settings → Script Properties)
+ *
+ *  Key                    Value
+ *  TWILIO_ACCOUNT_SID     ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+ *  TWILIO_AUTH_TOKEN      your_auth_token
+ *  TWILIO_FROM            +353XXXXXXXXXX  (your Twilio number)
+ *  ADMIN_PHONE            +353XXXXXXXXXX  (work phone)
+ *
+ *  Twilio free trial: https://www.twilio.com/try-twilio
+ *  Email uses the Gmail account that owns this script — no extra config.
+ * ─────────────────────────────────────────────
  */
 
+// ─── ENTRY POINT ──────────────────────────────────────────────────────────────
 function doPost(e) {
   try {
-    var sheet = SpreadsheetApp.getActiveSpreadsheet();
-    
-    // Determine which sheet to use based on the form type
+    var sheet     = SpreadsheetApp.getActiveSpreadsheet();
     var sheetName = determineSheetName(e.parameter);
-    
-    // Get or create the target sheet
+
     var targetSheet = sheet.getSheetByName(sheetName);
     if (!targetSheet) {
       targetSheet = sheet.insertSheet(sheetName);
       addHeaders(targetSheet, sheetName);
     }
-    
-    // Prepare and append data
-    var rowData = prepareRowData(e.parameter, sheetName);
-    targetSheet.appendRow(rowData);
-    
-    // Log success
-    console.log('Data saved to: ' + sheetName);
-    
-    return ContentService.createTextOutput(JSON.stringify({
-      'status': 'success',
-      'message': 'Data saved successfully to ' + sheetName
-    })).setMimeType(ContentService.MimeType.JSON);
-    
-  } catch(error) {
-    console.error('Error: ' + error.toString());
-    return ContentService.createTextOutput(JSON.stringify({
-      'status': 'error',
-      'message': error.toString()
-    })).setMimeType(ContentService.MimeType.JSON);
+
+    var params = normaliseParams(e.parameter);
+
+    targetSheet.appendRow(prepareRowData(params, sheetName));
+
+    // Side-effects — wrapped individually so neither can break the save
+    sendAdminSMS(params);
+    sendConfirmationEmail(params, sheetName);
+
+    console.log('Saved to: ' + sheetName);
+    return jsonOK('Data saved to ' + sheetName);
+
+  } catch (error) {
+    console.error('doPost error: ' + error.toString());
+    return jsonError(error.toString());
   }
 }
 
-/**
- * Determine which sheet to save data to
- */
+// ─── SHEET ROUTING ────────────────────────────────────────────────────────────
 function determineSheetName(params) {
-  // Priority 1: Explicit sheetName from retreat form
-  if (params.sheetName && params.sheetName.trim() !== '') {
-    return params.sheetName.trim();
-  }
-  
-  // Priority 2: Retreat name from retreat registration
-  if (params.retreatName && params.retreatName.trim() !== '') {
-    return params.retreatName.trim();
-  }
-  
-  // Priority 3: Contact page submission
-  if (params.subject || (params.message && !params.firstName)) {
-    return 'Contact Inquiries';
-  }
-  
-  // Default: General contact/newsletter signups
+  if (params.sheetName   && params.sheetName.trim()   !== '') return params.sheetName.trim();
+  if (params.retreatName && params.retreatName.trim() !== '') return params.retreatName.trim();
+  if (params.subject || (params.message && !params.firstName)) return 'Contact Inquiries';
   return 'Newsletter Signups';
 }
 
-/**
- * Add appropriate headers based on sheet type
- */
+// ─── NORMALISE PARAMS ─────────────────────────────────────────────────────────
+function normaliseParams(raw) {
+  var p = {};
+  for (var k in raw) p[k] = raw[k];
+  p.displayName = (p.Name || p.name || '').trim();
+  p.phone       = formatIrishPhone(p.phone || '');
+  p.timestamp   = formatTimestamp(new Date());
+  return p;
+}
+
+// ─── TIMESTAMP — DD/MM/YYYY HH:MM ────────────────────────────────────────────
+function formatTimestamp(date) {
+  var dd   = pad2(date.getDate());
+  var mm   = pad2(date.getMonth() + 1);
+  var yyyy = date.getFullYear();
+  var hh   = pad2(date.getHours());
+  var min  = pad2(date.getMinutes());
+  return dd + '/' + mm + '/' + yyyy + ' ' + hh + ':' + min;
+}
+function pad2(n) { return n < 10 ? '0' + n : String(n); }
+
+// ─── PHONE FORMATTER — 08X XXX XXXX (LTR, no +353) ───────────────────────────
+function formatIrishPhone(raw) {
+  if (!raw) return '';
+  var digits = raw.replace(/[^\d]/g, '');
+
+  // Strip international prefix 353 / 00353
+  if (digits.length >= 11 && digits.substring(0, 3) === '353')
+    digits = '0' + digits.substring(3);
+  if (digits.length >= 12 && digits.substring(0, 4) === '0353')
+    digits = '0' + digits.substring(4);
+
+  // Format 10-digit Irish mobile
+  if (digits.length === 10 && digits.substring(0, 2) === '08')
+    return digits.substring(0, 3) + ' ' + digits.substring(3, 6) + ' ' + digits.substring(6, 10);
+
+  return raw.trim();
+}
+
+// ─── HEADERS ─────────────────────────────────────────────────────────────────
 function addHeaders(sheet, sheetName) {
   var headers;
-  
   if (sheetName === 'Contact Inquiries') {
-    headers = [
-      'Timestamp',
-      'Name',
-      'Email',
-      'Phone',
-      'Subject',
-      'Message'
-    ];
+    headers = ['Timestamp', 'Name', 'Phone', 'Email', 'Subject', 'Message'];
   } else if (sheetName === 'Newsletter Signups') {
-    headers = [
-      'Timestamp',
-      'Name',
-      'Email',
-      'Phone',
-      'Message'
-    ];
+    headers = ['Timestamp', 'Name', 'Phone', 'Email', 'Message'];
   } else {
-    // Retreat registration headers
-    headers = [
-      'Timestamp',
-      'Retreat Name',
-      'Name',
-      'Email',
-      'Phone',
-      'Address',
-      'Dietary Requirements',
-      'Medical Information',
-      'Additional Notes'
-    ];
+    headers = ['Timestamp', 'Retreat Name', 'Name', 'Phone', 'Email',
+               'Address', 'Dietary Requirements', 'Medical Information', 'Additional Notes'];
   }
-  
+
   sheet.appendRow(headers);
-  
-  // Format header row
-  var headerRange = sheet.getRange(1, 1, 1, headers.length);
-  headerRange.setFontWeight('bold');
-  headerRange.setBackground('#5a7d9a');
-  headerRange.setFontColor('#ffffff');
-  
-  // Auto-resize columns
-  for (var i = 1; i <= headers.length; i++) {
-    sheet.autoResizeColumn(i);
+  var range = sheet.getRange(1, 1, 1, headers.length);
+  range.setFontWeight('bold');
+  range.setBackground('#5a7d9a');
+  range.setFontColor('#ffffff');
+
+  // Force LTR on the Phone column so numbers always read correctly
+  var phoneCol = headers.indexOf('Phone') + 1;
+  if (phoneCol > 0)
+    sheet.getRange(2, phoneCol, sheet.getMaxRows() - 1, 1)
+         .setTextDirection(SpreadsheetApp.TextDirection.LEFT_TO_RIGHT);
+
+  for (var i = 1; i <= headers.length; i++) sheet.autoResizeColumn(i);
+}
+
+// ─── ROW DATA — column order: Timestamp, Name, Phone, Email, Message ─────────
+function prepareRowData(p, sheetName) {
+  if (sheetName === 'Contact Inquiries')
+    return [p.timestamp, p.displayName, p.phone, p.email || '', p.subject || '', p.message || ''];
+
+  if (sheetName === 'Newsletter Signups')
+    return [p.timestamp, p.displayName, p.phone, p.email || '', p.message || ''];
+
+  // Retreat registration
+  return [p.timestamp, p.retreatName || '', p.displayName, p.phone,
+          p.email || '', p.address || '', p.dietary || '', p.medical || '', p.notes || ''];
+}
+
+// ─── ADMIN SMS VIA TWILIO ─────────────────────────────────────────────────────
+function sendAdminSMS(p) {
+  try {
+    var props = PropertiesService.getScriptProperties();
+    var sid   = props.getProperty('TWILIO_ACCOUNT_SID');
+    var token = props.getProperty('TWILIO_AUTH_TOKEN');
+    var from  = props.getProperty('TWILIO_FROM');
+    var to    = props.getProperty('ADMIN_PHONE');
+
+    if (!sid || !token || !from || !to) {
+      console.warn('Twilio not configured — SMS skipped.');
+      return;
+    }
+
+    var body = [
+      'NEW Shalom Booking',
+      'Name:  ' + (p.displayName || '—'),
+      'Phone: ' + (p.phone       || '—'),
+      'Email: ' + (p.email       || '—'),
+      'Time:  ' + p.timestamp
+    ].join('\n');
+
+    var resp = UrlFetchApp.fetch(
+      'https://api.twilio.com/2010-04-01/Accounts/' + sid + '/Messages.json',
+      {
+        method: 'post',
+        muteHttpExceptions: true,
+        headers: { Authorization: 'Basic ' + Utilities.base64Encode(sid + ':' + token) },
+        payload: { From: from, To: to, Body: body }
+      }
+    );
+    console.log('SMS [' + resp.getResponseCode() + ']: ' + resp.getContentText());
+  } catch (e) {
+    console.error('sendAdminSMS: ' + e.toString());
   }
 }
 
-/**
- * Prepare row data based on form type
- */
-function prepareRowData(params, sheetName) {
-  var timestamp = new Date();
-  
-  if (sheetName === 'Contact Inquiries') {
-    return [
-      timestamp,
-      params.name || '',
-      params.email || '',
-      params.phone || '',
-      params.subject || '',
-      params.message || ''
-    ];
-  } else if (sheetName === 'Newsletter Signups') {
-    return [
-      timestamp,
-      params.name || '',
-      params.email || '',
-      params.phone || '',
-      params.message || ''
-    ];
-  } else {
-    // Retreat registration data
-    return [
-      timestamp,
-      params.retreatName || '',
-      params.Name || '',
-      params.email || '',
-      params.phone || '',
-      params.address || '',
-      params.dietary || '',
-      params.medical || '',
-      params.notes || ''
-    ];
+// ─── USER CONFIRMATION EMAIL ──────────────────────────────────────────────────
+function sendConfirmationEmail(p, sheetName) {
+  var email = (p.email || '').trim();
+  if (!email) { console.warn('No email — confirmation skipped.'); return; }
+
+  try {
+    var retreat  = (p.retreatName || 'our upcoming retreat').trim();
+    var firstName = (p.displayName || 'there').split(' ')[0];
+
+    var htmlBody = '<div style="font-family:Georgia,serif;color:#2c3e50;max-width:560px;margin:0 auto">'
+      + '<div style="background:#5a7d9a;padding:28px 32px;border-radius:8px 8px 0 0;text-align:center">'
+      +   '<p style="color:#fff;font-size:11px;letter-spacing:2px;text-transform:uppercase;margin:0 0 4px">The Shalom Retreat Centre</p>'
+      +   '<h1 style="color:#fff;font-size:26px;font-weight:400;margin:0">Booking Received</h1>'
+      + '</div>'
+      + '<div style="background:#f8f9fa;padding:32px;border-radius:0 0 8px 8px;border:1px solid #e0e0e0;border-top:none">'
+      +   '<p style="font-size:16px">Dear ' + firstName + ',</p>'
+      +   '<p>Thank you for registering for <strong>' + retreat + '</strong> at The Shalom Retreat Centre.</p>'
+      +   '<p>Your booking request has been <strong>received</strong> and is currently <strong>pending confirmation</strong> from our staff. We will be in contact shortly to confirm your place.</p>'
+      +   '<p>If you have any questions, please contact us:</p>'
+      +   '<ul style="line-height:2.2">'
+      +     '<li>&#x1F4E7; <a href="mailto:bookings@shalomcentre.ie">bookings@shalomcentre.ie</a></li>'
+      +     '<li>&#x1F4DE; <a href="tel:+353834405359">+353 (0) 83 440 5359</a></li>'
+      +     '<li>&#x1F552; Mon&ndash;Fri: 9:30am &ndash; 4:30pm</li>'
+      +   '</ul>'
+      +   '<p style="margin-top:24px">God bless,<br><strong>The Shalom Retreat Centre Team</strong><br>'
+      +   '<small style="color:#6b7c8e">Main Street, Charleville, Co. Cork, P56 YP79</small></p>'
+      + '</div></div>';
+
+    var plainBody = 'Dear ' + firstName + ',\n\n'
+      + 'Thank you for registering for ' + retreat + ' at The Shalom Retreat Centre.\n\n'
+      + 'Your booking request has been received and is pending confirmation from our staff.\n'
+      + 'We will be in contact shortly.\n\n'
+      + 'Contact us:\n'
+      + 'Email: bookings@shalomcentre.ie\n'
+      + 'Phone: +353 (0) 83 440 5359\n'
+      + 'Hours: Mon-Fri 9:30am - 4:30pm\n\n'
+      + 'God bless,\nThe Shalom Retreat Centre\nMain Street, Charleville, Co. Cork';
+
+    MailApp.sendEmail({
+      to:       email,
+      subject:  'Booking Received — ' + retreat + ' | Shalom Retreat Centre',
+      body:     plainBody,
+      htmlBody: htmlBody
+    });
+    console.log('Confirmation sent to ' + email);
+  } catch (e) {
+    console.error('sendConfirmationEmail: ' + e.toString());
   }
 }
 
-/**
- * Test function - use this to verify the script works
- */
+// ─── HELPERS ─────────────────────────────────────────────────────────────────
+function jsonOK(msg) {
+  return ContentService.createTextOutput(JSON.stringify({ status: 'success', message: msg }))
+                       .setMimeType(ContentService.MimeType.JSON);
+}
+function jsonError(msg) {
+  return ContentService.createTextOutput(JSON.stringify({ status: 'error', message: msg }))
+                       .setMimeType(ContentService.MimeType.JSON);
+}
+
+// ─── MANUAL TEST ─────────────────────────────────────────────────────────────
 function testScript() {
-  var testData = {
+  var fake = {
     parameter: {
-      sheetName: 'Test Retreat',
+      sheetName:   'Test Retreat',
       retreatName: 'Test Retreat',
-      firstName: 'John',
-      lastName: 'Doe',
-      email: 'john@example.com',
-      phone: '123-456-7890',
-      address: '123 Test St',
-      accommodation: 'Private Room',
-      dietary: 'No restrictions',
-      medical: 'None',
-      emergency: 'Jane Doe - 098-765-4321',
-      notes: 'Looking forward to the retreat!'
+      Name:        'Aoife Murphy',
+      email:       'test@example.com',
+      phone:       '+353831234567',
+      address:     '1 Test Lane, Cork',
+      dietary:     'Vegetarian',
+      medical:     'None',
+      notes:       'Looking forward to it!'
     }
   };
-  
-  var result = doPost(testData);
-  Logger.log(result.getContent());
+  Logger.log(doPost(fake).getContent());
 }
-
-
-/**
- * INSTALLATION INSTRUCTIONS:
- * 
- * 1. Save this script in Google Apps Script
- * 2. Run the testScript() function to make sure it works
- * 3. Deploy as a Web App:
- *    - Click "Deploy" → "New deployment"
- *    - Select type: "Web app"
- *    - Execute as: "Me (your email)"
- *    - Who has access: "Anyone"
- *    - Click "Deploy"
- * 
- * 4. Copy the Web App URL that looks like:
- *    https://script.google.com/macros/s/ABC123.../exec
- * 
- * 5. Update your website's script.js:
- *    Find: const scriptURL = '...';
- *    Replace with your new URL
- * 
- * 6. Save and upload script.js to your website
- * 
- * RESULT:
- * - Newsletter signups go to "Newsletter Signups" tab
- * - Contact form submissions go to "Contact Inquiries" tab
- * - Each retreat gets its own tab (e.g., "Silent Retreat", "Advent Retreat")
- * - All data is automatically organized!
- */

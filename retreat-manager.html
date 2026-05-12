@@ -627,6 +627,20 @@
                 </select>
                 <span class="field-hint">Controls which part of the image is visible in cards &amp; the retreat page header.</span>
             </div>
+
+            <!-- ── COST / DONATION (requirement 6) ── -->
+            <div style="border-top:1px solid var(--border);margin:18px 0 14px;padding-top:16px">
+                <p style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;color:var(--text);margin-bottom:12px">Cost / Donation</p>
+                <div class="form-group" style="flex-direction:row;align-items:center;gap:10px;margin-bottom:10px">
+                    <input type="checkbox" id="f_costEnabled" style="width:18px;height:18px;accent-color:var(--olive);cursor:pointer;flex-shrink:0">
+                    <label for="f_costEnabled" style="font-size:14px;font-weight:600;cursor:pointer;margin:0">Show cost / donation text on this retreat</label>
+                </div>
+                <div class="form-group" id="costTextGroup" style="display:none;margin-bottom:0">
+                    <label class="field-label" for="f_costText">Cost / Donation Text</label>
+                    <input type="text" id="f_costText" placeholder="e.g. Suggested donation €20" maxlength="120">
+                    <span class="field-hint">Displayed at the bottom of the retreat card and registration page. Each retreat can have different text or none.</span>
+                </div>
+            </div>
         </div>
         <div class="modal-ft">
             <button class="btn btn-ghost"    id="btnModalCancel">Cancel</button>
@@ -1072,6 +1086,10 @@ function openAdd() {
     });
     document.getElementById('f_imgFocus').value = 'center';
     document.getElementById('modalEditIdx').value = '';
+    // Reset cost/donation fields
+    document.getElementById('f_costEnabled').checked = false;
+    document.getElementById('f_costText').value = '';
+    document.getElementById('costTextGroup').style.display = 'none';
     resetImgSection();
     switchImgTab('url');
     document.getElementById('retreatModal').classList.remove('hidden');
@@ -1091,6 +1109,13 @@ function openEdit(i) {
     document.getElementById('f_id').value     = r.id          || '';
     document.getElementById('f_imgUrl').value = r.image       || '';
     document.getElementById('f_imgFocus').value = r.imageFocus || 'center';
+
+    // Cost / donation (req 6)
+    const costEnabled = !!r.costEnabled;
+    document.getElementById('f_costEnabled').checked = costEnabled;
+    document.getElementById('f_costText').value = r.costText || '';
+    document.getElementById('costTextGroup').style.display = costEnabled ? '' : 'none';
+
     resetImgSection();
     switchImgTab('url');
     updateUrlPreview();
@@ -1107,6 +1132,12 @@ document.getElementById('btnModalClose').addEventListener('click', closeModal);
 document.getElementById('btnModalCancel').addEventListener('click', closeModal);
 document.getElementById('retreatModal').addEventListener('click', e => {
     if (e.target.id === 'retreatModal') closeModal();
+});
+
+// Cost/donation toggle (req 6)
+document.getElementById('f_costEnabled').addEventListener('change', function() {
+    document.getElementById('costTextGroup').style.display = this.checked ? '' : 'none';
+    if (!this.checked) document.getElementById('f_costText').value = '';
 });
 
 document.getElementById('btnModalSave').addEventListener('click', async () => {
@@ -1147,7 +1178,9 @@ document.getElementById('btnModalSave').addEventListener('click', async () => {
         }
     }
 
-    const retreat = { id, name, tag, date, description: desc, image: imageUrl, imageFocus: document.getElementById('f_imgFocus').value || 'center', sheetName: sheet };
+    const retreat = { id, name, tag, date, description: desc, image: imageUrl, imageFocus: document.getElementById('f_imgFocus').value || 'center', sheetName: sheet,
+                      costEnabled: document.getElementById('f_costEnabled').checked,
+                      costText: document.getElementById('f_costText').value.trim() };
 
     if (editIdx === null) {
         retreats.push(retreat);
