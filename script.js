@@ -1,31 +1,23 @@
-// ===== RETREATS DATA =====
-// Managed via /retreat-manager.html and stored in retreats.json
-
-// ===== MOBILE MENU TOGGLE =====
+// ===== MOBILE MENU =====
 const hamburger = document.querySelector('.hamburger');
 const navMenu   = document.querySelector('.nav-menu');
-
 if (hamburger && navMenu) {
     hamburger.addEventListener('click', () => {
         hamburger.classList.toggle('active');
         navMenu.classList.toggle('active');
     });
-    document.querySelectorAll('.nav-menu a').forEach(link => {
-        link.addEventListener('click', () => {
-            hamburger.classList.remove('active');
-            navMenu.classList.remove('active');
-        });
-    });
+    document.querySelectorAll('.nav-menu a').forEach(l => l.addEventListener('click', () => {
+        hamburger.classList.remove('active');
+        navMenu.classList.remove('active');
+    }));
 }
 
 // ===== BOOKING SUCCESS POPUP =====
-// Creates one shared popup element that any form can use.
 (function createBookingPopup() {
     const popup = document.createElement('div');
-    popup.id    = 'bookingPopup';
+    popup.id = 'bookingPopup';
     popup.setAttribute('role', 'dialog');
     popup.setAttribute('aria-modal', 'true');
-    popup.setAttribute('aria-label', 'Booking confirmation');
     popup.innerHTML =
         '<div class="booking-popup-overlay" id="bookingPopupOverlay">' +
             '<div class="booking-popup-box">' +
@@ -41,112 +33,79 @@ if (hamburger && navMenu) {
             '</div>' +
         '</div>';
     document.body.appendChild(popup);
-
     document.getElementById('bookingPopupClose').addEventListener('click', hideBookingPopup);
     document.getElementById('bookingPopupOverlay').addEventListener('click', function(e) {
         if (e.target === this) hideBookingPopup();
     });
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') hideBookingPopup();
-    });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') hideBookingPopup(); });
 })();
 
 function showBookingPopup() {
-    const popup = document.getElementById('bookingPopup');
-    if (popup) {
-        popup.style.display = 'flex';
-        document.body.style.overflow = 'hidden';
-        document.getElementById('bookingPopupClose').focus();
-    }
+    const p = document.getElementById('bookingPopup');
+    if (p) { p.style.display = 'flex'; document.body.style.overflow = 'hidden'; document.getElementById('bookingPopupClose').focus(); }
 }
-
 function hideBookingPopup() {
-    const popup = document.getElementById('bookingPopup');
-    if (popup) {
-        popup.style.display = 'none';
-        document.body.style.overflow = '';
-    }
+    const p = document.getElementById('bookingPopup');
+    if (p) { p.style.display = 'none'; document.body.style.overflow = ''; }
 }
 
-// ===== GOOGLE SHEETS INTEGRATION =====
+// ===== GOOGLE SHEETS =====
 const scriptURL = 'https://script.google.com/macros/s/AKfycbz3bWasgGFisq-HXqzneAX9Et6m7rHTARl3SNBAXFLDCyZHYdt98_6RG_jbxx0YCQjzaQ/exec';
 
 function handleFormSubmit(formId, successId, errorId) {
-    const form           = document.getElementById(formId);
-    const successMessage = document.getElementById(successId);
-    const errorMessage   = document.getElementById(errorId);
+    const form = document.getElementById(formId);
     if (!form) return;
+    const successMsg = document.getElementById(successId);
+    const errorMsg   = document.getElementById(errorId);
 
     form.addEventListener('submit', e => {
         e.preventDefault();
-        const submitButton = form.querySelector('button[type="submit"]');
-        const originalText = submitButton.textContent;
-        submitButton.textContent = 'Sending…';
-        submitButton.disabled    = true;
-        if (successMessage) successMessage.style.display = 'none';
-        if (errorMessage)   errorMessage.style.display   = 'none';
+        const btn  = form.querySelector('button[type="submit"]');
+        const orig = btn.textContent;
+        btn.textContent = 'Sending…'; btn.disabled = true;
+        if (successMsg) successMsg.style.display = 'none';
+        if (errorMsg)   errorMsg.style.display   = 'none';
 
         fetch(scriptURL, { method: 'POST', body: new FormData(form), mode: 'no-cors' })
             .then(() => {
-                // Show the shared popup (requirement 3)
                 showBookingPopup();
-
-                // Also show the inline success message if it exists
-                if (successMessage) {
-                    successMessage.style.display = 'flex';
-                    successMessage.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                    setTimeout(() => { successMessage.style.display = 'none'; }, 6000);
+                if (successMsg) {
+                    successMsg.style.display = 'flex';
+                    successMsg.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    setTimeout(() => { successMsg.style.display = 'none'; }, 6000);
                 }
                 form.reset();
             })
             .catch(() => {
-                if (errorMessage) {
-                    errorMessage.style.display = 'flex';
-                    errorMessage.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                }
+                if (errorMsg) { errorMsg.style.display = 'flex'; errorMsg.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }
             })
-            .finally(() => {
-                submitButton.textContent = originalText;
-                submitButton.disabled    = false;
-            });
+            .finally(() => { btn.textContent = orig; btn.disabled = false; });
     });
 }
 
 // ===== RETREAT CARD RENDERER =====
-// Description is now truncated with CSS ellipsis (3-line clamp).
-// The old scroll-on-hover mechanic has been removed (requirement 4).
 function renderRetreatCards(retreats, containerId, limit) {
     const grid = document.getElementById(containerId);
     if (!grid) return;
     grid.innerHTML = '';
     const items = limit ? retreats.slice(0, limit) : retreats;
     let delay = 1;
-
     items.forEach(retreat => {
         const card = document.createElement('div');
         card.className = 'retreat-card fade-in-delay-' + delay;
         card.innerHTML =
             '<div class="retreat-image">' +
-                // z-index:3 on the tag ensures it stays above the scaling image (req 5)
                 '<div class="retreat-tag" style="z-index:3;position:absolute;top:1rem;right:1rem">' + retreat.tag + '</div>' +
                 '<img src="' + retreat.image + '" alt="' + retreat.name + '" loading="lazy" style="object-position:' + (retreat.imageFocus || 'center') + '">' +
             '</div>' +
             '<div class="retreat-content">' +
                 '<h3>' + retreat.name + '</h3>' +
                 '<div class="retreat-date">' +
-                    '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor">' +
-                        '<rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>' +
-                        '<line x1="16" y1="2" x2="16" y2="6"></line>' +
-                        '<line x1="8" y1="2" x2="8" y2="6"></line>' +
-                        '<line x1="3" y1="10" x2="21" y2="10"></line>' +
-                    '</svg>' +
+                    '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>' +
                     retreat.date +
                 '</div>' +
                 '<div class="retreat-desc-wrap"><p>' + retreat.description + '</p></div>' +
-                // Optional cost/donation text (requirement 6)
-                (retreat.costEnabled && retreat.costText
-                    ? '<div class="retreat-cost-badge">' + retreat.costText + '</div>'
-                    : '') +
+                (retreat.costEnabled && retreat.costText ? '<div class="retreat-cost-badge">' + retreat.costText + '</div>' : '') +
                 '<a href="retreat-signup.html?retreat=' + retreat.id + '" class="btn-secondary">Learn More &amp; Register</a>' +
             '</div>';
         grid.appendChild(card);
@@ -154,26 +113,160 @@ function renderRetreatCards(retreats, containerId, limit) {
     });
 }
 
-// ===== SMOOTH SCROLL =====
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function(e) {
-        e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
-        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    });
-});
-
-// ===== LOAD RETREATS FROM JSON =====
+// ===== DATA LOADERS =====
 async function loadRetreats() {
     try {
         const res = await fetch('retreats.json?v=' + Date.now());
         if (!res.ok) throw new Error('HTTP ' + res.status);
         return await res.json();
     } catch (e) {
-        console.warn('Could not load retreats.json, falling back to empty list.', e);
+        console.warn('Could not load retreats.json', e);
         return [];
     }
 }
+
+async function loadSiteConfig() {
+    try {
+        const res = await fetch('site-config.json?v=' + Date.now());
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        return await res.json();
+    } catch (e) {
+        console.warn('Could not load site-config.json', e);
+        return {};
+    }
+}
+
+// ===== NOTICE BANNER =====
+function applyNoticeBanner(cfg) {
+    const el = document.getElementById('noticeBanner');
+    if (!el) return;
+    if (cfg.noticeEnabled && cfg.noticeText && cfg.noticeText.trim()) {
+        el.innerHTML =
+            '<div class="notice-banner-inner">' +
+                '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>' +
+                '<span>' + cfg.noticeText + '</span>' +
+            '</div>';
+        el.style.display = '';
+    } else {
+        el.style.display = 'none';
+    }
+}
+
+// ===== FACILITIES HERO IMAGE =====
+function applyFacilitiesHero(cfg) {
+    const banner   = document.getElementById('facilitiesHeroBanner');
+    const fallback = document.getElementById('facilitiesHeroFallback');
+    const img      = document.getElementById('facilitiesHeroImg');
+    if (!banner || !fallback) return;
+
+    if (cfg.facilitiesHeroImage && cfg.facilitiesHeroImage.trim()) {
+        img.src = cfg.facilitiesHeroImage.trim();
+        banner.style.display   = '';
+        fallback.style.display = 'none';
+    } else {
+        banner.style.display   = 'none';
+        fallback.style.display = '';
+    }
+}
+
+// ===== FACILITIES CARD IMAGES =====
+function applyFacilitiesCardImages(cfg) {
+    const images = cfg.facilitiesCardImages || [];
+    document.querySelectorAll('.facility-card[data-card-index]').forEach(card => {
+        const idx    = parseInt(card.getAttribute('data-card-index'), 10);
+        const url    = images[idx] && images[idx].trim();
+        const imgWrap = card.querySelector('.facility-card-img');
+        const imgEl   = imgWrap && imgWrap.querySelector('img');
+        if (imgWrap && imgEl && url) {
+            imgEl.src = url;
+            imgWrap.style.display = '';
+        } else if (imgWrap) {
+            imgWrap.style.display = 'none';
+        }
+    });
+}
+
+// ===== FACILITIES CAROUSEL =====
+function buildCarousel(cfg) {
+    const wrap  = document.getElementById('facilitiesCarouselWrap');
+    const track = document.getElementById('carouselTrack');
+    const dots  = document.getElementById('carouselDots');
+    const prev  = document.getElementById('carouselPrev');
+    const next  = document.getElementById('carouselNext');
+    if (!wrap || !track) return;
+
+    const images = (cfg.facilitiesCarousel || []).filter(u => u && u.trim());
+    if (images.length === 0) { wrap.style.display = 'none'; return; }
+
+    wrap.style.display = '';
+    track.innerHTML = '';
+    if (dots) dots.innerHTML = '';
+
+    images.forEach((url, i) => {
+        // Each slide is a link (href = the image URL itself)
+        const slide = document.createElement('a');
+        slide.href   = url;
+        slide.target = '_blank';
+        slide.rel    = 'noopener';
+        slide.className = 'carousel-slide' + (i === 0 ? ' active' : '');
+        slide.setAttribute('aria-label', 'Facilities photo ' + (i + 1));
+        const img  = document.createElement('img');
+        img.src    = url;
+        img.alt    = 'Shalom facilities photo ' + (i + 1);
+        img.loading = 'lazy';
+        slide.appendChild(img);
+        track.appendChild(slide);
+
+        if (dots) {
+            const dot = document.createElement('button');
+            dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
+            dot.setAttribute('aria-label', 'Go to photo ' + (i + 1));
+            dot.addEventListener('click', () => goToSlide(i));
+            dots.appendChild(dot);
+        }
+    });
+
+    let current = 0;
+    let autoTimer = null;
+
+    function goToSlide(n) {
+        const slides = track.querySelectorAll('.carousel-slide');
+        const dotEls = dots ? dots.querySelectorAll('.carousel-dot') : [];
+        slides[current].classList.remove('active');
+        if (dotEls[current]) dotEls[current].classList.remove('active');
+        current = (n + images.length) % images.length;
+        slides[current].classList.add('active');
+        if (dotEls[current]) dotEls[current].classList.add('active');
+        resetAuto();
+    }
+
+    function resetAuto() {
+        clearInterval(autoTimer);
+        autoTimer = setInterval(() => goToSlide(current + 1), 5000);
+    }
+
+    if (prev) prev.addEventListener('click', () => goToSlide(current - 1));
+    if (next) next.addEventListener('click', () => goToSlide(current + 1));
+
+    // Swipe support
+    let touchStartX = 0;
+    track.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
+    track.addEventListener('touchend',   e => {
+        const diff = touchStartX - e.changedTouches[0].clientX;
+        if (Math.abs(diff) > 40) goToSlide(diff > 0 ? current + 1 : current - 1);
+    });
+
+    resetAuto();
+}
+
+// ===== SMOOTH SCROLL =====
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', function(e) {
+        e.preventDefault();
+        const t = document.querySelector(this.getAttribute('href'));
+        if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+});
 
 // ===== INITIALISE =====
 document.addEventListener('DOMContentLoaded', async () => {
@@ -182,69 +275,71 @@ document.addEventListener('DOMContentLoaded', async () => {
     handleFormSubmit('contactPageForm',  'successMessage',      'errorMessage');
     handleFormSubmit('registrationForm', 'successMessage',      'errorMessage');
 
-    const retreatsData = await loadRetreats();
+    // Load both data files in parallel
+    const [retreatsData, siteConfig] = await Promise.all([loadRetreats(), loadSiteConfig()]);
 
+    // Apply site-wide config
+    applyNoticeBanner(siteConfig);
+    applyFacilitiesHero(siteConfig);
+    applyFacilitiesCardImages(siteConfig);
+    buildCarousel(siteConfig);
+
+    // Render retreat cards
     const retreatInfo = retreatsData.reduce((map, r) => {
         map[r.id] = { name: r.name, sheetName: r.sheetName };
         return map;
     }, {});
-
     renderRetreatCards(retreatsData, 'highlightsGrid', 3);
     renderRetreatCards(retreatsData, 'retreatsGrid');
 
-    // ── Retreat signup page ────────────────────────────────────────────────────
-    const urlParams = new URLSearchParams(window.location.search);
-    const retreatId = urlParams.get('retreat');
-    const titleEl   = document.getElementById('retreatTitle');
-    const nameInput = document.getElementById('retreatName');
-    const sheetInput= document.getElementById('sheetName');
+    // ── Retreat signup page ──────────────────────────────────────────────────
+    const urlParams  = new URLSearchParams(window.location.search);
+    const retreatId  = urlParams.get('retreat');
+    const titleEl    = document.getElementById('retreatTitle');
+    const nameInput  = document.getElementById('retreatName');
+    const sheetInput = document.getElementById('sheetName');
 
     if (retreatId && retreatInfo[retreatId]) {
         const info = retreatInfo[retreatId];
-        if (nameInput)  nameInput.value  = info.name;
-        if (sheetInput) sheetInput.value = info.sheetName;
+        if (nameInput)  nameInput.value    = info.name;
+        if (sheetInput) sheetInput.value   = info.sheetName;
         if (titleEl)    titleEl.textContent = info.name;
 
         const retreat = retreatsData.find(r => r.id === retreatId);
 
-        // Hero banner image (full-width, no text overlay)
         const heroImgWrap = document.getElementById('retreatHeroImgWrap');
         if (heroImgWrap && retreat) {
             const img = document.getElementById('retreatHeroImg');
             const tag = document.getElementById('retreatHeroTag');
             if (img) {
-                img.src   = retreat.image;
-                img.alt   = retreat.name;
-                img.style.objectPosition = retreat.imageFocus || 'center';
+                img.src = retreat.image;
+                img.alt = retreat.name;
+                // Always show from the very top of the image on the signup banner (req 3)
+                img.style.objectPosition = 'top';
             }
             if (tag) tag.textContent = retreat.tag;
             heroImgWrap.style.display = '';
         }
 
-        // Info block BELOW the banner
         const heroInfo = document.getElementById('retreatHeroInfo');
         if (heroInfo && retreat) {
-            const tagEl   = document.getElementById('retreatHeroInfoTag');
-            const titleEl2= document.getElementById('retreatHeroInfoTitle');
-            const dateEl  = document.getElementById('retreatHeroInfoDate');
-            const descEl  = document.getElementById('retreatHeroInfoDesc');
-            const costEl  = document.getElementById('retreatCostBadge');
-
-            if (tagEl)   tagEl.textContent   = retreat.tag;
-            if (titleEl2)titleEl2.textContent = retreat.name;
-            if (dateEl)  dateEl.textContent  = retreat.date;
-            if (descEl)  descEl.textContent  = retreat.description;
-
-            // Cost / donation text (requirement 6)
+            const tagEl    = document.getElementById('retreatHeroInfoTag');
+            const titleEl2 = document.getElementById('retreatHeroInfoTitle');
+            const dateEl   = document.getElementById('retreatHeroInfoDate');
+            const descEl   = document.getElementById('retreatHeroInfoDesc');
+            const costEl   = document.getElementById('retreatCostBadge');
+            if (tagEl)    tagEl.textContent    = retreat.tag;
+            if (titleEl2) titleEl2.textContent  = retreat.name;
+            if (dateEl)   dateEl.textContent    = retreat.date;
+            if (descEl)   descEl.textContent    = retreat.description;
             if (costEl) {
                 if (retreat.costEnabled && retreat.costText) {
-                    costEl.textContent    = retreat.costText;
-                    costEl.style.display  = '';
+                    costEl.textContent   = retreat.costText;
+                    costEl.style.display = '';
                 } else {
-                    costEl.style.display  = 'none';
+                    costEl.style.display = 'none';
                 }
             }
-
             heroInfo.style.display = '';
         }
     } else if (titleEl) {

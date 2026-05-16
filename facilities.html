@@ -41,8 +41,17 @@
         <div class="orb orb-6"></div>
     </div>
 
-    <!-- Hero -->
-    <section class="facilities-hero">
+    <!-- Facilities Hero — image loaded from site-config.json if set, else gradient fallback -->
+    <div id="facilitiesHeroBanner" class="facilities-hero-banner" style="display:none;">
+        <img id="facilitiesHeroImg" src="" alt="Shalom Retreat Centre facilities" class="facilities-hero-banner-img">
+        <div class="facilities-hero-banner-overlay"></div>
+        <div class="facilities-hero-banner-text">
+            <h1>Rent Our Facilities</h1>
+            <p>A peaceful, professional space in the heart of Charleville</p>
+        </div>
+    </div>
+    <!-- Fallback shown when no hero image is configured -->
+    <section id="facilitiesHeroFallback" class="facilities-hero">
         <div class="container">
             <h1 class="fade-in">Rent Our Facilities</h1>
             <p class="fade-in-delay-1">A peaceful, professional space in the heart of Charleville — available for your group, event, or organisation.</p>
@@ -60,81 +69,127 @@
 
             <div class="facilities-grid">
 
-                <div class="facility-card fade-in-delay-1">
-                    <div class="facility-icon">
-                        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                            <circle cx="9" cy="7" r="4"></circle>
-                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                        </svg>
+                <div class="facility-card fade-in-delay-1" data-card-index="0">
+                    <!-- Image slot: populated by script.js from site-config.json -->
+                    <div class="facility-card-img" style="display:none;">
+                        <img src="" alt="Main Hall">
                     </div>
-                    <h3>Main Hall</h3>
-                    <p>Our spacious main hall comfortably seats up to 80 people in a theatre style or 50 for workshops. Equipped with a projector, screen, and sound system, it is ideal for talks, conferences, and large gatherings.</p>
+                    <div class="facility-card-body">
+                        <div class="facility-icon">
+                            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="9" cy="7" r="4"></circle>
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                            </svg>
+                        </div>
+                        <h3>Main Hall</h3>
+                        <p>Our spacious main hall comfortably seats up to 80 people in a theatre style or 50 for workshops. Equipped with a projector, screen, and sound system, it is ideal for talks, conferences, and large gatherings.</p>
+                    </div>
                 </div>
 
-                <div class="facility-card fade-in-delay-2">
-                    <div class="facility-icon">
-                        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
-                            <line x1="8" y1="21" x2="16" y2="21"></line>
-                            <line x1="12" y1="17" x2="12" y2="21"></line>
-                        </svg>
+                <div class="facility-card fade-in-delay-2" data-card-index="1">
+                    <div class="facility-card-img" style="display:none;">
+                        <img src="" alt="Meeting &amp; Seminar Rooms">
                     </div>
-                    <h3>Meeting &amp; Seminar Rooms</h3>
-                    <p>Three smaller rooms seat 8–20 people each — perfect for breakout sessions, board meetings, small group prayer, or one-to-one spiritual direction. Natural light and a calm atmosphere throughout.</p>
+                    <div class="facility-card-body">
+                        <div class="facility-icon">
+                            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                                <line x1="8" y1="21" x2="16" y2="21"></line>
+                                <line x1="12" y1="17" x2="12" y2="21"></line>
+                            </svg>
+                        </div>
+                        <h3>Meeting &amp; Seminar Rooms</h3>
+                        <p>Three smaller rooms seat 8–20 people each — perfect for breakout sessions, board meetings, small group prayer, or one-to-one spiritual direction. Natural light and a calm atmosphere throughout.</p>
+                    </div>
                 </div>
 
-                <div class="facility-card fade-in-delay-3">
-                    <div class="facility-icon">
-                        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                            <polyline points="9 22 9 12 15 12 15 22"></polyline>
-                        </svg>
+                <div class="facility-card fade-in-delay-3" data-card-index="2">
+                    <div class="facility-card-img" style="display:none;">
+                        <img src="" alt="Chapel">
                     </div>
-                    <h3>Chapel</h3>
-                    <p>A sacred and intimate space for prayer, reflection, and liturgy. The chapel seats 30 and provides a reverent atmosphere for Mass, Adoration, or quiet contemplation. Available on request.</p>
+                    <div class="facility-card-body">
+                        <div class="facility-icon">
+                            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                            </svg>
+                        </div>
+                        <h3>Chapel</h3>
+                        <p>A sacred and intimate space for prayer, reflection, and liturgy. The chapel seats 30 and provides a reverent atmosphere for Mass, Adoration, or quiet contemplation. Available on request.</p>
+                    </div>
                 </div>
 
-                <div class="facility-card fade-in-delay-4">
-                    <div class="facility-icon">
-                        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M18 8h1a4 4 0 0 1 0 8h-1"></path>
-                            <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path>
-                            <line x1="6" y1="1" x2="6" y2="4"></line>
-                            <line x1="10" y1="1" x2="10" y2="4"></line>
-                            <line x1="14" y1="1" x2="14" y2="4"></line>
-                        </svg>
+                <div class="facility-card fade-in-delay-4" data-card-index="3">
+                    <div class="facility-card-img" style="display:none;">
+                        <img src="" alt="Catering &amp; Kitchen">
                     </div>
-                    <h3>Catering &amp; Kitchen</h3>
-                    <p>A fully equipped commercial kitchen and dining area, with capacity for catered lunches, coffee mornings, or self-catering for day events. Tea, coffee, and light refreshments can be arranged with advance notice.</p>
+                    <div class="facility-card-body">
+                        <div class="facility-icon">
+                            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M18 8h1a4 4 0 0 1 0 8h-1"></path>
+                                <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path>
+                                <line x1="6" y1="1" x2="6" y2="4"></line>
+                                <line x1="10" y1="1" x2="10" y2="4"></line>
+                                <line x1="14" y1="1" x2="14" y2="4"></line>
+                            </svg>
+                        </div>
+                        <h3>Catering &amp; Kitchen</h3>
+                        <p>A fully equipped commercial kitchen and dining area, with capacity for catered lunches, coffee mornings, or self-catering for day events. Tea, coffee, and light refreshments can be arranged with advance notice.</p>
+                    </div>
                 </div>
 
-                <div class="facility-card fade-in-delay-1">
-                    <div class="facility-icon">
-                        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="12" cy="12" r="10"></circle>
-                            <line x1="2" y1="12" x2="22" y2="12"></line>
-                            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-                        </svg>
+                <div class="facility-card fade-in-delay-1" data-card-index="4">
+                    <div class="facility-card-img" style="display:none;">
+                        <img src="" alt="Gardens &amp; Grounds">
                     </div>
-                    <h3>Gardens &amp; Grounds</h3>
-                    <p>Peaceful, well-maintained gardens surrounding the centre — ideal for outdoor prayer walks, guided meditations, or simply a quiet break during your event. Wheelchair accessible pathways throughout.</p>
+                    <div class="facility-card-body">
+                        <div class="facility-icon">
+                            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="2" y1="12" x2="22" y2="12"></line>
+                                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                            </svg>
+                        </div>
+                        <h3>Gardens &amp; Grounds</h3>
+                        <p>Peaceful, well-maintained gardens surrounding the centre — ideal for outdoor prayer walks, guided meditations, or simply a quiet break during your event. Wheelchair accessible pathways throughout.</p>
+                    </div>
                 </div>
 
-                <div class="facility-card fade-in-delay-2">
-                    <div class="facility-icon">
-                        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="1" y="3" width="15" height="13" rx="2"></rect>
-                            <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
-                            <circle cx="5.5" cy="18.5" r="2.5"></circle>
-                            <circle cx="18.5" cy="18.5" r="2.5"></circle>
-                        </svg>
+                <div class="facility-card fade-in-delay-2" data-card-index="5">
+                    <div class="facility-card-img" style="display:none;">
+                        <img src="" alt="Parking">
                     </div>
-                    <h3>Parking</h3>
-                    <p>Ample on-site parking for up to 40 vehicles, with additional street parking nearby. The centre is centrally located on Main Street, Charleville, and accessible by public transport.</p>
+                    <div class="facility-card-body">
+                        <div class="facility-icon">
+                            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="1" y="3" width="15" height="13" rx="2"></rect>
+                                <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+                                <circle cx="5.5" cy="18.5" r="2.5"></circle>
+                                <circle cx="18.5" cy="18.5" r="2.5"></circle>
+                            </svg>
+                        </div>
+                        <h3>Parking</h3>
+                        <p>Ample on-site parking for up to 40 vehicles, with additional street parking nearby. The centre is centrally located on Main Street, Charleville, and accessible by public transport.</p>
+                    </div>
                 </div>
 
+            </div>
+
+            <!-- Photo Carousel — images loaded from site-config.json -->
+            <div id="facilitiesCarouselWrap" class="facilities-carousel-wrap" style="display:none;">
+                <h2 class="carousel-heading">Our Spaces</h2>
+                <div class="facilities-carousel" id="facilitiesCarousel">
+                    <div class="carousel-track" id="carouselTrack"></div>
+                    <button class="carousel-btn carousel-prev" id="carouselPrev" aria-label="Previous image">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                    </button>
+                    <button class="carousel-btn carousel-next" id="carouselNext" aria-label="Next image">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                    </button>
+                    <div class="carousel-dots" id="carouselDots"></div>
+                </div>
             </div>
 
             <!-- CTA Banner -->

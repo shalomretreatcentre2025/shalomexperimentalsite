@@ -1470,3 +1470,212 @@ img {
     .retreat-hero-img-wrap { height: 240px; }
     .retreat-hero-below-title { font-size: 1.6rem; }
 }
+
+/* ===== NOTICE BANNER (index page) ===== */
+#noticeBanner {
+    background: linear-gradient(90deg, #5a7d9a 0%, #4a6d8a 100%);
+    color: #fff;
+    padding: 0.85rem 0;
+    text-align: center;
+    position: relative;
+    z-index: 10;
+}
+
+.notice-banner-inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    font-size: 0.97rem;
+    font-weight: 500;
+    line-height: 1.5;
+}
+
+.notice-banner-inner svg { stroke: rgba(255,255,255,0.85); flex-shrink: 0; }
+
+/* ===== FACILITIES HERO BANNER (with image) ===== */
+.facilities-hero-banner {
+    position: relative;
+    width: 100%;
+    height: 420px;
+    overflow: hidden;
+    background: #2c3e50;
+}
+
+.facilities-hero-banner-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top;
+    display: block;
+}
+
+.facilities-hero-banner-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, rgba(20,35,50,0.35) 0%, rgba(20,35,50,0.65) 100%);
+}
+
+.facilities-hero-banner-text {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    padding: 2.5rem 3rem;
+    color: #fff;
+    z-index: 2;
+}
+
+.facilities-hero-banner-text h1 {
+    color: #fff;
+    font-size: 3rem;
+    margin-bottom: 0.4rem;
+    text-shadow: 0 2px 12px rgba(0,0,0,0.4);
+}
+
+.facilities-hero-banner-text p {
+    color: rgba(255,255,255,0.88);
+    font-size: 1.1rem;
+    margin: 0;
+}
+
+/* ===== FACILITY CARD IMAGE SLOT ===== */
+.facility-card {
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-light);
+    border-radius: 14px;
+    overflow: hidden; /* so card-img clips to rounded corners */
+    border: 1px solid rgba(90,125,154,0.12);
+    transition: var(--transition);
+    padding: 0; /* body carries the padding now */
+}
+
+.facility-card-img {
+    width: 100%;
+    height: 180px;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.facility-card-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+    transition: transform 0.4s ease;
+}
+
+.facility-card:hover .facility-card-img img { transform: scale(1.05); }
+
+.facility-card-body {
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+/* Keep old single-padding style for cards without image slot (icon + body) */
+.facility-card > .facility-icon { padding: 2rem 2rem 0; }
+.facility-card > h3             { padding: 0 2rem; }
+.facility-card > p              { padding: 0 2rem 2rem; }
+
+/* ===== FACILITIES CAROUSEL ===== */
+.facilities-carousel-wrap {
+    margin: 3rem 0;
+}
+
+.carousel-heading {
+    text-align: center;
+    color: var(--primary-color);
+    margin-bottom: 1.5rem;
+    font-size: 2rem;
+}
+
+.facilities-carousel {
+    position: relative;
+    border-radius: 16px;
+    overflow: hidden;
+    background: #111;
+    aspect-ratio: 16/7;
+    max-height: 500px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+}
+
+.carousel-track {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.carousel-slide {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.6s ease;
+    display: block;
+    cursor: pointer;
+}
+
+.carousel-slide.active { opacity: 1; }
+
+.carousel-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+}
+
+.carousel-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 5;
+    background: rgba(255,255,255,0.15);
+    border: 2px solid rgba(255,255,255,0.4);
+    border-radius: 50%;
+    width: 48px; height: 48px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    color: #fff;
+    transition: background 0.2s, border-color 0.2s;
+    backdrop-filter: blur(4px);
+}
+
+.carousel-btn:hover { background: rgba(255,255,255,0.3); border-color: rgba(255,255,255,0.8); }
+.carousel-prev { left: 1rem; }
+.carousel-next { right: 1rem; }
+
+.carousel-dots {
+    position: absolute;
+    bottom: 1rem;
+    left: 0; right: 0;
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    z-index: 5;
+}
+
+.carousel-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.45);
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    transition: background 0.2s, transform 0.2s;
+}
+
+.carousel-dot.active { background: #fff; transform: scale(1.2); }
+
+@media (max-width: 600px) {
+    .facilities-hero-banner          { height: 260px; }
+    .facilities-hero-banner-text h1  { font-size: 2rem; }
+    .facilities-hero-banner-text     { padding: 1.5rem; }
+    .carousel-btn                    { width: 36px; height: 36px; }
+    .facilities-carousel             { aspect-ratio: 4/3; }
+    .notice-banner-inner             { font-size: 0.88rem; }
+}
