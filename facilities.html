@@ -41,203 +41,261 @@
         <div class="orb orb-6"></div>
     </div>
 
-    <!-- Facilities Hero — image loaded from site-config.json if set, else gradient fallback -->
+    <!-- ① Hero — image banner (shown if URL set in site-config) or gradient fallback -->
     <div id="facilitiesHeroBanner" class="facilities-hero-banner" style="display:none;">
         <img id="facilitiesHeroImg" src="" alt="Shalom Retreat Centre facilities" class="facilities-hero-banner-img">
         <div class="facilities-hero-banner-overlay"></div>
         <div class="facilities-hero-banner-text">
+            <p class="fac-hero-label">The Shalom Retreat Centre</p>
             <h1>Rent Our Facilities</h1>
-            <p>A peaceful, professional space in the heart of Charleville</p>
+            <p class="fac-hero-sub">A peaceful, professional venue in the heart of Charleville</p>
         </div>
     </div>
-    <!-- Fallback shown when no hero image is configured -->
-    <section id="facilitiesHeroFallback" class="facilities-hero">
+    <section id="facilitiesHeroFallback" class="fac-hero-fallback">
         <div class="container">
-            <h1 class="fade-in">Rent Our Facilities</h1>
-            <p class="fade-in-delay-1">A peaceful, professional space in the heart of Charleville — available for your group, event, or organisation.</p>
+            <p class="fac-hero-label reveal">The Shalom Retreat Centre</p>
+            <h1 class="reveal">Rent Our Facilities</h1>
+            <p class="fac-hero-sub reveal">A peaceful, professional venue in the heart of Charleville — available for your group, event, or organisation.</p>
         </div>
     </section>
 
-    <!-- Facilities Cards -->
-    <section class="facilities-section">
+    <!-- ② Stats bar -->
+    <div class="fac-stats-bar reveal-up">
         <div class="container">
+            <div class="fac-stats">
+                <div class="fac-stat"><span class="fac-stat-n">80</span><span class="fac-stat-l">Max capacity</span></div>
+                <div class="fac-stat-div"></div>
+                <div class="fac-stat"><span class="fac-stat-n">3</span><span class="fac-stat-l">Meeting rooms</span></div>
+                <div class="fac-stat-div"></div>
+                <div class="fac-stat"><span class="fac-stat-n">1</span><span class="fac-stat-l">Private chapel</span></div>
+                <div class="fac-stat-div"></div>
+                <div class="fac-stat"><span class="fac-stat-n">40+</span><span class="fac-stat-l">Parking spaces</span></div>
+            </div>
+        </div>
+    </div>
 
-            <div class="facilities-intro fade-in">
-                <h2>A Tranquil Setting for Any Occasion</h2>
-                <p>The Shalom Retreat Centre offers a range of beautifully maintained, fully-equipped spaces suitable for days of reflection, workshops, training events, meetings, and more. Whether you are a faith community, a charity, or a corporate team seeking a calm and inspiring environment, we welcome you.</p>
+    <!-- ③ Spaces grid -->
+    <section class="fac-spaces">
+        <div class="container">
+            <div class="fac-section-head reveal">
+                <h2>Our Spaces</h2>
+                <p>Every room is clean, well-maintained and ready for your event. All bookings include Wi-Fi, tea &amp; coffee, and on-site support.</p>
             </div>
 
-            <div class="facilities-grid">
+            <div class="fac-grid">
 
-                <div class="facility-card fade-in-delay-1" data-card-index="0">
-                    <!-- Image slot: populated by script.js from site-config.json -->
-                    <div class="facility-card-img" style="display:none;">
-                        <img src="" alt="Main Hall">
+                <article class="fac-card reveal-up" data-card-index="0">
+                    <div class="fac-card-img">
+                        <!-- Placeholder replaced by site-config.json via script.js -->
+                        <img src="https://picsum.photos/seed/shalom-hall/800/500" alt="Main Hall" loading="lazy">
+                        <!-- To change: go to Retreat Manager → Site Settings → Facility Card Photos → Main Hall -->
                     </div>
-                    <div class="facility-card-body">
-                        <div class="facility-icon">
-                            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                                <circle cx="9" cy="7" r="4"></circle>
-                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                            </svg>
+                    <div class="fac-card-body">
+                        <div class="fac-card-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                         </div>
                         <h3>Main Hall</h3>
-                        <p>Our spacious main hall comfortably seats up to 80 people in a theatre style or 50 for workshops. Equipped with a projector, screen, and sound system, it is ideal for talks, conferences, and large gatherings.</p>
+                        <p>Seats up to 80 (theatre) or 50 (workshop). Projector, screen &amp; sound system included. Ideal for conferences, talks &amp; large gatherings.</p>
                     </div>
-                </div>
+                </article>
 
-                <div class="facility-card fade-in-delay-2" data-card-index="1">
-                    <div class="facility-card-img" style="display:none;">
-                        <img src="" alt="Meeting &amp; Seminar Rooms">
+                <article class="fac-card reveal-up" data-card-index="1">
+                    <div class="fac-card-img">
+                        <img src="https://picsum.photos/seed/shalom-meeting/800/500" alt="Meeting Rooms" loading="lazy">
                     </div>
-                    <div class="facility-card-body">
-                        <div class="facility-icon">
-                            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
-                                <line x1="8" y1="21" x2="16" y2="21"></line>
-                                <line x1="12" y1="17" x2="12" y2="21"></line>
-                            </svg>
+                    <div class="fac-card-body">
+                        <div class="fac-card-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
                         </div>
                         <h3>Meeting &amp; Seminar Rooms</h3>
-                        <p>Three smaller rooms seat 8–20 people each — perfect for breakout sessions, board meetings, small group prayer, or one-to-one spiritual direction. Natural light and a calm atmosphere throughout.</p>
+                        <p>Three rooms seating 8–20 each. Perfect for breakout sessions, board meetings, spiritual direction or small group work.</p>
                     </div>
-                </div>
+                </article>
 
-                <div class="facility-card fade-in-delay-3" data-card-index="2">
-                    <div class="facility-card-img" style="display:none;">
-                        <img src="" alt="Chapel">
+                <article class="fac-card reveal-up" data-card-index="2">
+                    <div class="fac-card-img">
+                        <img src="https://picsum.photos/seed/shalom-chapel/800/500" alt="Chapel" loading="lazy">
                     </div>
-                    <div class="facility-card-body">
-                        <div class="facility-icon">
-                            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                                <polyline points="9 22 9 12 15 12 15 22"></polyline>
-                            </svg>
+                    <div class="fac-card-body">
+                        <div class="fac-card-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
                         </div>
                         <h3>Chapel</h3>
-                        <p>A sacred and intimate space for prayer, reflection, and liturgy. The chapel seats 30 and provides a reverent atmosphere for Mass, Adoration, or quiet contemplation. Available on request.</p>
+                        <p>A sacred, intimate space seating 30. Available for Mass, Adoration, or quiet contemplation. Available on request.</p>
                     </div>
-                </div>
+                </article>
 
-                <div class="facility-card fade-in-delay-4" data-card-index="3">
-                    <div class="facility-card-img" style="display:none;">
-                        <img src="" alt="Catering &amp; Kitchen">
+                <article class="fac-card reveal-up" data-card-index="3">
+                    <div class="fac-card-img">
+                        <img src="https://picsum.photos/seed/shalom-kitchen/800/500" alt="Catering" loading="lazy">
                     </div>
-                    <div class="facility-card-body">
-                        <div class="facility-icon">
-                            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M18 8h1a4 4 0 0 1 0 8h-1"></path>
-                                <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path>
-                                <line x1="6" y1="1" x2="6" y2="4"></line>
-                                <line x1="10" y1="1" x2="10" y2="4"></line>
-                                <line x1="14" y1="1" x2="14" y2="4"></line>
-                            </svg>
+                    <div class="fac-card-body">
+                        <div class="fac-card-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
                         </div>
                         <h3>Catering &amp; Kitchen</h3>
-                        <p>A fully equipped commercial kitchen and dining area, with capacity for catered lunches, coffee mornings, or self-catering for day events. Tea, coffee, and light refreshments can be arranged with advance notice.</p>
+                        <p>Commercial kitchen &amp; dining area for catered lunches or self-catering. Tea, coffee &amp; light refreshments arranged with notice.</p>
                     </div>
-                </div>
+                </article>
 
-                <div class="facility-card fade-in-delay-1" data-card-index="4">
-                    <div class="facility-card-img" style="display:none;">
-                        <img src="" alt="Gardens &amp; Grounds">
+                <article class="fac-card reveal-up" data-card-index="4">
+                    <div class="fac-card-img">
+                        <img src="https://picsum.photos/seed/shalom-garden/800/500" alt="Gardens" loading="lazy">
                     </div>
-                    <div class="facility-card-body">
-                        <div class="facility-icon">
-                            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <circle cx="12" cy="12" r="10"></circle>
-                                <line x1="2" y1="12" x2="22" y2="12"></line>
-                                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-                            </svg>
+                    <div class="fac-card-body">
+                        <div class="fac-card-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
                         </div>
                         <h3>Gardens &amp; Grounds</h3>
-                        <p>Peaceful, well-maintained gardens surrounding the centre — ideal for outdoor prayer walks, guided meditations, or simply a quiet break during your event. Wheelchair accessible pathways throughout.</p>
+                        <p>Peaceful maintained gardens ideal for prayer walks, outdoor sessions or quiet breaks. Wheelchair accessible throughout.</p>
                     </div>
-                </div>
+                </article>
 
-                <div class="facility-card fade-in-delay-2" data-card-index="5">
-                    <div class="facility-card-img" style="display:none;">
-                        <img src="" alt="Parking">
+                <article class="fac-card reveal-up" data-card-index="5">
+                    <div class="fac-card-img">
+                        <img src="https://picsum.photos/seed/shalom-parking/800/500" alt="Parking" loading="lazy">
                     </div>
-                    <div class="facility-card-body">
-                        <div class="facility-icon">
-                            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <rect x="1" y="3" width="15" height="13" rx="2"></rect>
-                                <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
-                                <circle cx="5.5" cy="18.5" r="2.5"></circle>
-                                <circle cx="18.5" cy="18.5" r="2.5"></circle>
-                            </svg>
+                    <div class="fac-card-body">
+                        <div class="fac-card-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13" rx="2"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
                         </div>
                         <h3>Parking</h3>
-                        <p>Ample on-site parking for up to 40 vehicles, with additional street parking nearby. The centre is centrally located on Main Street, Charleville, and accessible by public transport.</p>
+                        <p>On-site parking for 40+ vehicles. Central Main Street location. Additional street parking nearby. Accessible by bus.</p>
                     </div>
-                </div>
+                </article>
 
             </div>
-
-            <!-- Photo Carousel — images loaded from site-config.json -->
-            <div id="facilitiesCarouselWrap" class="facilities-carousel-wrap" style="display:none;">
-                <h2 class="carousel-heading">Our Spaces</h2>
-                <div class="facilities-carousel" id="facilitiesCarousel">
-                    <div class="carousel-track" id="carouselTrack"></div>
-                    <button class="carousel-btn carousel-prev" id="carouselPrev" aria-label="Previous image">
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
-                    </button>
-                    <button class="carousel-btn carousel-next" id="carouselNext" aria-label="Next image">
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                    </button>
-                    <div class="carousel-dots" id="carouselDots"></div>
-                </div>
-            </div>
-
-            <!-- CTA Banner -->
-            <div class="facilities-cta fade-in">
-                <h2>Get a Quote Today</h2>
-                <p>Every group is different. Contact us to discuss your requirements, check availability, and receive a tailored quote. We look forward to welcoming you.</p>
-                <div class="cta-buttons">
-                    <a href="contact.html" class="btn-primary">Enquire Now</a>
-                    <a href="tel:+353834405359" class="btn-secondary">Call +353 (0) 83 440 5359</a>
-                </div>
-            </div>
-
         </div>
     </section>
 
-    <!-- What We Offer -->
-    <section class="facilities-what">
+    <!-- ④ Carousel -->
+    <div id="facilitiesCarouselWrap" class="facilities-carousel-wrap" style="display:none;">
         <div class="container">
-            <h2>What Is Included</h2>
-            <div class="what-grid">
-                <div>
-                    <ul class="what-list">
+            <h2 class="carousel-heading reveal">Gallery</h2>
+            <div class="facilities-carousel" id="facilitiesCarousel">
+                <div class="carousel-track" id="carouselTrack"></div>
+                <button class="carousel-btn carousel-prev" id="carouselPrev" aria-label="Previous image">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+                </button>
+                <button class="carousel-btn carousel-next" id="carouselNext" aria-label="Next image">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+                </button>
+                <div class="carousel-dots" id="carouselDots"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ⑤ What's included + CTA -->
+    <section class="fac-bottom">
+        <div class="container">
+            <div class="fac-bottom-grid">
+
+                <!-- What's included -->
+                <div class="fac-included reveal-up">
+                    <h2>What's Included</h2>
+                    <ul class="fac-included-list">
                         <li>Flexible room layouts tailored to your event</li>
                         <li>High-speed Wi-Fi throughout the building</li>
-                        <li>Projector, screen, and HDMI connectivity in the main hall</li>
-                        <li>Whiteboard and flip charts in meeting rooms</li>
-                        <li>Complimentary tea and coffee on arrival</li>
-                        <li>Accessible facilities and wheelchair access</li>
+                        <li>Projector, screen &amp; HDMI in the main hall</li>
+                        <li>Whiteboard &amp; flip charts in meeting rooms</li>
+                        <li>Complimentary tea &amp; coffee on arrival</li>
+                        <li>Accessible facilities &amp; wheelchair access</li>
                         <li>On-site caretaker support during your event</li>
-                        <li>Optional catering packages available on request</li>
-                        <li>Quiet reflection areas and garden access</li>
-                        <li>Safe, secure, and child-friendly environment</li>
+                        <li>Optional catering packages on request</li>
+                        <li>Quiet reflection areas &amp; garden access</li>
+                        <li>Safe, secure &amp; child-friendly environment</li>
                     </ul>
-                </div>
-                <div>
-                    <div class="facilities-testimonial">
-                        <p>"We held our annual diocesan planning day at Shalom and it was a wonderful experience. The rooms were bright and comfortable, the staff were incredibly welcoming, and the peaceful setting really helped our team focus."</p>
-                        <cite>— Diocese of Cloyne Team</cite>
-                    </div>
-                    <div class="facilities-testimonial" style="margin-top:1.5rem">
-                        <p>"The Shalom Centre was the perfect venue for our community mindfulness workshop. Clean, calm, and professional — exactly what we needed."</p>
-                        <cite>— Local Community Group, Cork</cite>
-                    </div>
-                    <div style="margin-top:2rem;padding:1.5rem;background:var(--white);border-radius:12px;border:1px solid rgba(90,125,154,0.15)">
-                        <p style="font-size:0.88rem;color:var(--text-light);margin-bottom:0.4rem;font-weight:700;text-transform:uppercase;letter-spacing:0.5px">Pricing</p>
-                        <p style="color:var(--text-dark);font-size:0.97rem;line-height:1.75;margin:0">Rates are available on request and depend on the room, duration, and group size. Preferential rates are available for registered charities, faith organisations, and community groups. <a href="contact.html" style="color:var(--primary-color);font-weight:600">Contact us</a> to discuss.</p>
+                    <div class="fac-testimonial reveal-up">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="var(--accent-color)" xmlns="http://www.w3.org/2000/svg"><path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/></svg>
+                        <p>We held our annual diocesan planning day at Shalom — a wonderful experience. The rooms were bright, the staff welcoming, and the peaceful setting helped our team focus.</p>
+                        <cite>Diocese of Cloyne Team</cite>
                     </div>
                 </div>
+
+                <!-- CTA panel + enquiry form -->
+                <div class="fac-cta-panel reveal-up">
+                    <div class="fac-cta-box">
+                        <h2>Get a Quote Today</h2>
+                        <p>Every group is different. Fill in the form below and we'll get back to you promptly with availability and pricing.</p>
+                        <div class="fac-cta-actions">
+                            <button class="btn-primary fac-enquire-btn" id="btnFacilityEnquire">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                                Enquire Now
+                            </button>
+                            <a href="tel:+353834405359" class="btn-secondary">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.21 12 19.79 19.79 0 0 1 1.14 3.38 2 2 0 0 1 3.12 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                                Call Us
+                            </a>
+                        </div>
+
+                        <!-- ── Enquiry form — toggles open ── -->
+                        <div class="fac-enquiry-form-wrap" id="facilityEnquiryWrap">
+                            <form id="facilityEnquiryForm" class="fac-enquiry-form" novalidate>
+                                <input type="hidden" name="sheetName" value="Facility Enquiries">
+
+                                <div class="fac-form-row">
+                                    <div class="fac-form-field">
+                                        <label for="faq_name">Full Name <span>*</span></label>
+                                        <input type="text" id="faq_name" name="Name" required placeholder="Your name">
+                                    </div>
+                                    <div class="fac-form-field">
+                                        <label for="faq_email">Email <span>*</span></label>
+                                        <input type="email" id="faq_email" name="email" required placeholder="your@email.com">
+                                    </div>
+                                </div>
+
+                                <div class="fac-form-row">
+                                    <div class="fac-form-field">
+                                        <label for="faq_phone">Phone Number</label>
+                                        <input type="tel" id="faq_phone" name="phone" placeholder="083 000 0000">
+                                    </div>
+                                    <div class="fac-form-field">
+                                        <label for="faq_attendees">Approximate Attendees</label>
+                                        <input type="text" id="faq_attendees" name="attendees" placeholder="e.g. 20–30 people">
+                                    </div>
+                                </div>
+
+                                <div class="fac-form-field">
+                                    <label for="faq_dates">Preferred Date(s)</label>
+                                    <input type="text" id="faq_dates" name="dates" placeholder="e.g. 15 June 2026, or 10–12 July 2026">
+                                </div>
+
+                                <div class="fac-form-field">
+                                    <label>Facilities Required</label>
+                                    <div class="fac-checkboxes">
+                                        <label class="fac-check"><input type="checkbox" name="facilities" value="Main Hall"> Main Hall</label>
+                                        <label class="fac-check"><input type="checkbox" name="facilities" value="Meeting Room"> Meeting Room</label>
+                                        <label class="fac-check"><input type="checkbox" name="facilities" value="Chapel"> Chapel</label>
+                                        <label class="fac-check"><input type="checkbox" name="facilities" value="Catering"> Catering / Kitchen</label>
+                                        <label class="fac-check"><input type="checkbox" name="facilities" value="Gardens"> Gardens</label>
+                                        <label class="fac-check"><input type="checkbox" name="facilities" value="Parking"> Parking</label>
+                                    </div>
+                                </div>
+
+                                <div class="fac-form-field">
+                                    <label for="faq_notes">Additional Notes</label>
+                                    <textarea id="faq_notes" name="message" rows="3" placeholder="Tell us about your event, any special requirements, etc."></textarea>
+                                </div>
+
+                                <div class="fac-form-footer">
+                                    <button type="submit" class="btn-primary">Send Enquiry</button>
+                                    <div class="success-message" id="facilityEnquirySuccess" style="display:none;">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                                        Enquiry sent — we'll be in touch shortly!
+                                    </div>
+                                    <div class="error-message" id="facilityEnquiryError" style="display:none;">
+                                        Something went wrong. Please call us directly.
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="fac-pricing-note">
+                            <strong>Pricing</strong> — Rates on request, based on room, duration &amp; group size. Preferential rates for charities, faith &amp; community groups.
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
     </section>
@@ -251,14 +309,12 @@
                     <div class="footer-col">
                         <h4>The Shalom Retreat Centre</h4>
                         <p>A Catholic Retreat Centre in Charleville Parish, dedicated to peace, prayer, and growth in faith.</p>
-                        <p class="footer-diocese">
-                            Part of the <a href="https://www.cloynediocese.ie" target="_blank" rel="noopener">Diocese of Cloyne</a>
-                        </p>
+                        <p class="footer-diocese">Part of the <a href="https://www.cloynediocese.ie" target="_blank" rel="noopener">Diocese of Cloyne</a></p>
                     </div>
 
                     <div class="footer-col">
                         <h4>Quick Links</h4>
-                        <ul class="footer-links">
+                        <ul class="footer-links footer-links-grid">
                             <li><a href="index.html">Home</a></li>
                             <li><a href="bookings.html">Upcoming Retreats</a></li>
                             <li><a href="about.html">About Us</a></li>
@@ -273,26 +329,10 @@
                     <div class="footer-col">
                         <h4>Contact Us</h4>
                         <ul class="footer-contact-list">
-                            <li>
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-                                <span>Main Street, Charleville,<br>Co. Cork, P56 YP79</span>
-                            </li>
-                            <li>
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.21 12 19.79 19.79 0 0 1 1.14 3.38 2 2 0 0 1 3.12 1h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
-                                <a href="tel:+353834405359">+353 (0) 83 440 5359</a>
-                            </li>
-                            <li>
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-                                <a href="mailto:info@shalomcentre.ie">Info@shalomcentre.ie</a>
-                            </li>
-                            <li>
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-                                <a href="mailto:bookings@shalomcentre.ie">Bookings@shalomcentre.ie</a>
-                            </li>
-                            <li>
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                                <span>Mon&ndash;Fri: 9:30am &ndash; 4:30pm</span>
-                            </li>
+                            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg><span>Main Street, Charleville,<br>Co. Cork, P56 YP79</span></li>
+                            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.21 12 19.79 19.79 0 0 1 1.14 3.38 2 2 0 0 1 3.12 1h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg><a href="tel:+353834405359">+353 (0) 83 440 5359</a></li>
+                            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg><a href="mailto:bookings@shalomcentre.ie">Bookings@shalomcentre.ie</a></li>
+                            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span>Mon–Fri: 9:30am – 4:30pm</span></li>
                         </ul>
                     </div>
 

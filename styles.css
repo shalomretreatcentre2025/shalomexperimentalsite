@@ -618,6 +618,7 @@ img {
     line-height: 1.75;
     margin: 0;
     max-width: 680px;
+    white-space: pre-line;
 }
 
 /* Cost / donation badge — on signup page hero */
@@ -721,6 +722,7 @@ img {
     color: var(--text-light);
     line-height: 1.7;
     margin: 0;
+    white-space: pre-line;
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
@@ -1678,4 +1680,352 @@ img {
     .carousel-btn                    { width: 36px; height: 36px; }
     .facilities-carousel             { aspect-ratio: 4/3; }
     .notice-banner-inner             { font-size: 0.88rem; }
+}
+
+/* =====================================================
+   FACILITIES PAGE v2 — condensed, sleek, professional
+   ===================================================== */
+
+/* ── Scroll reveal ───────────────────────────────── */
+.reveal,
+.reveal-up {
+    opacity: 0;
+    transition: opacity 0.65s ease, transform 0.65s ease;
+}
+.reveal     { transform: none; }
+.reveal-up  { transform: translateY(28px); }
+.reveal.in-view,
+.reveal-up.in-view {
+    opacity: 1;
+    transform: translateY(0);
+}
+/* Stagger siblings automatically */
+.fac-grid .fac-card:nth-child(1) { transition-delay: 0.05s; }
+.fac-grid .fac-card:nth-child(2) { transition-delay: 0.12s; }
+.fac-grid .fac-card:nth-child(3) { transition-delay: 0.19s; }
+.fac-grid .fac-card:nth-child(4) { transition-delay: 0.05s; }
+.fac-grid .fac-card:nth-child(5) { transition-delay: 0.12s; }
+.fac-grid .fac-card:nth-child(6) { transition-delay: 0.19s; }
+
+/* ── Hero fallback (no image) ────────────────────── */
+.fac-hero-fallback {
+    padding: 5rem 0 3rem;
+    text-align: center;
+    background: linear-gradient(135deg, #f0f4f8, #e8f0f5);
+    border-bottom: 1px solid rgba(90,125,154,0.12);
+}
+.fac-hero-label {
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--primary-color);
+    margin-bottom: 0.7rem;
+}
+.fac-hero-sub {
+    color: var(--text-light);
+    font-size: 1.1rem;
+    max-width: 560px;
+    margin: 0.6rem auto 0;
+    line-height: 1.7;
+}
+.fac-hero-fallback h1 { color: var(--primary-color); font-size: 3rem; margin-bottom: 0.3rem; }
+
+/* ── Stats bar ───────────────────────────────────── */
+.fac-stats-bar {
+    background: var(--primary-color);
+    padding: 1.4rem 0;
+}
+.fac-stats {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    flex-wrap: wrap;
+}
+.fac-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 2.5rem;
+    gap: 0.15rem;
+}
+.fac-stat-n {
+    font-family: var(--font-heading);
+    font-size: 2rem;
+    font-weight: 600;
+    color: #fff;
+    line-height: 1;
+}
+.fac-stat-l {
+    font-size: 0.78rem;
+    color: rgba(255,255,255,0.72);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 600;
+}
+.fac-stat-div {
+    width: 1px;
+    height: 2.5rem;
+    background: rgba(255,255,255,0.2);
+    flex-shrink: 0;
+}
+
+/* ── Spaces section ──────────────────────────────── */
+.fac-spaces {
+    padding: 4rem 0 2rem;
+    background: var(--white);
+}
+.fac-section-head {
+    text-align: center;
+    max-width: 640px;
+    margin: 0 auto 2.5rem;
+}
+.fac-section-head h2 { color: var(--primary-color); margin-bottom: 0.6rem; }
+.fac-section-head p  { color: var(--text-light); font-size: 1rem; line-height: 1.7; }
+
+/* ── Facility cards grid ─────────────────────────── */
+.fac-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 2.5rem;
+}
+
+.fac-card {
+    background: var(--bg-light);
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid rgba(90,125,154,0.1);
+    transition: transform 0.28s ease, box-shadow 0.28s ease, border-color 0.28s ease;
+    display: flex;
+    flex-direction: column;
+}
+.fac-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    border-color: var(--primary-color);
+}
+
+/* Card image — placeholder shown by default, replaced by site-config via script.js */
+.fac-card-img {
+    width: 100%;
+    height: 160px;
+    overflow: hidden;
+    flex-shrink: 0;
+    background: #d5e3ef;
+}
+.fac-card-img img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+    transition: transform 0.4s ease;
+}
+.fac-card:hover .fac-card-img img { transform: scale(1.06); }
+
+.fac-card-body {
+    padding: 1.4rem 1.5rem 1.6rem;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+.fac-card-icon {
+    width: 38px; height: 38px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 0.8rem;
+    flex-shrink: 0;
+}
+.fac-card-icon svg { stroke: #fff; }
+.fac-card-body h3 {
+    color: var(--text-dark);
+    font-size: 1.1rem;
+    margin-bottom: 0.45rem;
+    font-family: var(--font-body);
+    font-weight: 700;
+}
+.fac-card-body p {
+    color: var(--text-light);
+    font-size: 0.9rem;
+    line-height: 1.65;
+    margin: 0;
+}
+
+/* ── Bottom section ──────────────────────────────── */
+.fac-bottom {
+    padding: 3.5rem 0 5rem;
+    background: var(--bg-light);
+    border-top: 1px solid rgba(90,125,154,0.1);
+}
+.fac-bottom-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: start;
+}
+
+/* What's included */
+.fac-included h2 { color: var(--primary-color); margin-bottom: 1.4rem; font-size: 1.7rem; }
+.fac-included-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    margin-bottom: 2rem;
+}
+.fac-included-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.7rem;
+    color: var(--text-light);
+    font-size: 0.95rem;
+    line-height: 1.55;
+}
+.fac-included-list li::before {
+    content: '';
+    display: block;
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--accent-color);
+    flex-shrink: 0;
+    margin-top: 0.45rem;
+}
+
+.fac-testimonial {
+    background: var(--white);
+    border-left: 3px solid var(--accent-color);
+    border-radius: 0 10px 10px 0;
+    padding: 1.3rem 1.4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+.fac-testimonial svg { flex-shrink: 0; opacity: 0.6; }
+.fac-testimonial p   { color: var(--text-light); font-style: italic; font-size: 0.93rem; line-height: 1.7; margin: 0; }
+.fac-testimonial cite { font-size: 0.82rem; color: var(--primary-color); font-weight: 700; font-style: normal; }
+
+/* CTA panel */
+.fac-cta-box {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 2rem 2rem 0;
+    border: 1px solid rgba(90,125,154,0.12);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    overflow: hidden;
+}
+.fac-cta-box h2 { color: var(--primary-color); font-size: 1.7rem; margin-bottom: 0.5rem; }
+.fac-cta-box > p { color: var(--text-light); font-size: 0.95rem; line-height: 1.65; margin-bottom: 1.2rem; }
+.fac-cta-actions { display: flex; gap: 0.8rem; flex-wrap: wrap; margin-bottom: 0; }
+.fac-enquire-btn { display: flex; align-items: center; gap: 0.5rem; }
+
+/* Enquiry form accordion */
+.fac-enquiry-form-wrap {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+                padding 0.4s ease,
+                opacity 0.35s ease;
+    opacity: 0;
+    padding: 0 0;
+}
+.fac-enquiry-form-wrap.open {
+    max-height: 1000px;
+    opacity: 1;
+    padding: 1.6rem 0 0.5rem;
+}
+
+.fac-enquiry-form { display: flex; flex-direction: column; gap: 1rem; }
+
+.fac-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+.fac-form-field { display: flex; flex-direction: column; gap: 0.3rem; }
+.fac-form-field label {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+.fac-form-field label span { color: var(--accent-color); }
+.fac-form-field input,
+.fac-form-field textarea {
+    padding: 0.6rem 0.85rem;
+    border: 1px solid rgba(90,125,154,0.25);
+    border-radius: 8px;
+    font-size: 0.93rem;
+    font-family: var(--font-body);
+    color: var(--text-dark);
+    background: var(--bg-light);
+    transition: border-color 0.2s;
+    width: 100%;
+    box-sizing: border-box;
+}
+.fac-form-field input:focus,
+.fac-form-field textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    background: var(--white);
+}
+.fac-form-field textarea { resize: vertical; min-height: 72px; }
+
+.fac-checkboxes {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.4rem 1rem;
+    padding: 0.6rem 0;
+}
+.fac-check {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.9rem;
+    color: var(--text-light);
+    cursor: pointer;
+}
+.fac-check input { width: 15px; height: 15px; accent-color: var(--primary-color); cursor: pointer; flex-shrink: 0; }
+
+.fac-form-footer {
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+    padding-bottom: 0.5rem;
+}
+
+.fac-pricing-note {
+    padding: 1rem 0 1.4rem;
+    font-size: 0.85rem;
+    color: var(--text-light);
+    line-height: 1.65;
+    border-top: 1px solid rgba(90,125,154,0.1);
+    margin-top: 1.2rem;
+}
+.fac-pricing-note strong { color: var(--text-dark); }
+
+/* ── Quick Links 4×2 grid ────────────────────────── */
+.footer-links-grid {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.4rem 1.2rem;
+}
+
+/* ── Responsive ──────────────────────────────────── */
+@media (max-width: 1024px) {
+    .fac-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 768px) {
+    .fac-bottom-grid    { grid-template-columns: 1fr; }
+    .fac-form-row       { grid-template-columns: 1fr; }
+    .fac-stat           { padding: 0 1.2rem; }
+    .fac-hero-fallback h1 { font-size: 2.2rem; }
+}
+
+@media (max-width: 600px) {
+    .fac-grid           { grid-template-columns: 1fr; }
+    .fac-stat-div       { display: none; }
+    .fac-stats          { gap: 1rem; }
+    .fac-checkboxes     { grid-template-columns: 1fr; }
 }

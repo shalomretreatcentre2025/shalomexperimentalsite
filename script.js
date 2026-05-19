@@ -104,7 +104,7 @@ function renderRetreatCards(retreats, containerId, limit) {
                     '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>' +
                     retreat.date +
                 '</div>' +
-                '<div class="retreat-desc-wrap"><p>' + retreat.description + '</p></div>' +
+                '<div class="retreat-desc-wrap"><p>' + retreat.description.replace(/\n/g, '<br>') + '</p></div>' +
                 (retreat.costEnabled && retreat.costText ? '<div class="retreat-cost-badge">' + retreat.costText + '</div>' : '') +
                 '<a href="retreat-signup.html?retreat=' + retreat.id + '" class="btn-secondary">Learn More &amp; Register</a>' +
             '</div>';
@@ -259,6 +259,73 @@ function buildCarousel(cfg) {
     resetAuto();
 }
 
+// ===== SCROLL REVEAL (IntersectionObserver) =====
+function initScrollReveal() {
+    const opts = { threshold: 0.12, rootMargin: '0px 0px -40px 0px' };
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+            if (e.isIntersecting) {
+                e.target.classList.add('in-view');
+                observer.unobserve(e.target);
+            }
+        });
+    }, opts);
+    document.querySelectorAll('.reveal, .reveal-up').forEach(el => observer.observe(el));
+}
+
+// ===== FACILITY ENQUIRY FORM TOGGLE =====
+function initFacilityEnquiry() {
+    const btn  = document.getElementById('btnFacilityEnquire');
+    const wrap = document.getElementById('facilityEnquiryWrap');
+    if (!btn || !wrap) return;
+
+    // Wire up checkbox → FormData aggregation before submit
+    const form = document.getElementById('facilityEnquiryForm');
+    if (form) {
+        form.addEventListener('submit', e => {
+            e.preventDefault();
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const orig = submitBtn.textContent;
+            submitBtn.textContent = 'Sending…'; submitBtn.disabled = true;
+
+            // Collect checked facilities into one field
+            const checked = Array.from(form.querySelectorAll('input[name="facilities"]:checked'))
+                                 .map(c => c.value);
+            const fd = new FormData(form);
+            fd.delete('facilities');
+            fd.append('facilities', checked.join(', ') || 'Not specified');
+
+            const successEl = document.getElementById('facilityEnquirySuccess');
+            const errorEl   = document.getElementById('facilityEnquiryError');
+            if (successEl) successEl.style.display = 'none';
+            if (errorEl)   errorEl.style.display   = 'none';
+
+            const scriptURL = 'https://script.google.com/macros/s/AKfycbz3bWasgGFisq-HXqzneAX9Et6m7rHTARl3SNBAXFLDCyZHYdt98_6RG_jbxx0YCQjzaQ/exec';
+            fetch(scriptURL, { method: 'POST', body: fd, mode: 'no-cors' })
+                .then(() => {
+                    if (successEl) successEl.style.display = 'flex';
+                    form.reset();
+                })
+                .catch(() => {
+                    if (errorEl) errorEl.style.display = 'flex';
+                })
+                .finally(() => { submitBtn.textContent = orig; submitBtn.disabled = false; });
+        });
+    }
+
+    btn.addEventListener('click', () => {
+        const open = wrap.classList.toggle('open');
+        btn.textContent = open ? 'Close Form ✕' : 'Enquire Now';
+        if (open) {
+            wrap.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            // Update button icon
+            btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Close Form';
+        } else {
+            btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> Enquire Now';
+        }
+    });
+}
+
 // ===== SMOOTH SCROLL =====
 document.querySelectorAll('a[href^="#"]').forEach(a => {
     a.addEventListener('click', function(e) {
@@ -270,6 +337,9 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
 
 // ===== INITIALISE =====
 document.addEventListener('DOMContentLoaded', async () => {
+    initScrollReveal();
+    initFacilityEnquiry();
+
     handleFormSubmit('stayUpdatedForm',  'stayUpdatedSuccess',  'stayUpdatedError');
     handleFormSubmit('facilityForm',     'facilitySuccess',     'facilityError');
     handleFormSubmit('contactPageForm',  'successMessage',      'errorMessage');
@@ -331,7 +401,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (tagEl)    tagEl.textContent    = retreat.tag;
             if (titleEl2) titleEl2.textContent  = retreat.name;
             if (dateEl)   dateEl.textContent    = retreat.date;
-            if (descEl)   descEl.textContent    = retreat.description;
+            if (descEl)   descEl.innerHTML      = retreat.description.replace(/\n/g, '<br>');
             if (costEl) {
                 if (retreat.costEnabled && retreat.costText) {
                     costEl.textContent   = retreat.costText;

@@ -2,6 +2,13 @@
   "noticeEnabled": true,
   "noticeText": "Adoration every Tuesday & Wednesday 10:30am – 6pm. All welcome.",
   "facilitiesHeroImage": "",
-  "facilitiesCardImages": ["", "", "", "", "", ""],
+  "facilitiesCardImages": [
+    "https://picsum.photos/seed/shalom-hall/800/500",
+    "https://picsum.photos/seed/shalom-meeting/800/500",
+    "https://picsum.photos/seed/shalom-chapel/800/500",
+    "https://picsum.photos/seed/shalom-kitchen/800/500",
+    "https://picsum.photos/seed/shalom-garden/800/500",
+    "https://picsum.photos/seed/shalom-parking/800/500"
+  ],
   "facilitiesCarousel": []
 }
