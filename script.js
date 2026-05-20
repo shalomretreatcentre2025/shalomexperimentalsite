@@ -125,6 +125,17 @@ async function loadRetreats() {
     }
 }
 
+async function loadPageContent() {
+    try {
+        const res = await fetch('page-content.json?v=' + Date.now());
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        return await res.json();
+    } catch (e) {
+        console.warn('Could not load page-content.json', e);
+        return {};
+    }
+}
+
 async function loadSiteConfig() {
     try {
         const res = await fetch('site-config.json?v=' + Date.now());
@@ -134,6 +145,50 @@ async function loadSiteConfig() {
         console.warn('Could not load site-config.json', e);
         return {};
     }
+}
+
+// ===== PAGE CONTENT CMS =====
+function applyPageContent(content) {
+    // Determine which page's content to apply
+    const p = window.location.pathname;
+    let pageKey = 'index';
+    if (p.includes('about'))    pageKey = 'about';
+    else if (p.includes('contact'))  pageKey = 'contact';
+    else if (p.includes('bookings')) pageKey = 'bookings';
+
+    const pc = content[pageKey];
+    if (!pc) return;
+
+    document.querySelectorAll('[data-cms]').forEach(el => {
+        const key = el.getAttribute('data-cms');
+        if (pc[key] === undefined || pc[key] === '') return;
+        const val = pc[key];
+
+        // Images: update src attribute
+        if (el.tagName === 'IMG') {
+            el.src = val;
+            const altKey = key.replace('_image', '_image_alt');
+            if (pc[altKey]) el.alt = pc[altKey];
+            return;
+        }
+
+        // Email / phone links: update href too
+        if (el.tagName === 'A') {
+            if (key === 'email_info')     { el.href = 'mailto:' + val; el.textContent = val; return; }
+            if (key === 'email_bookings') { el.href = 'mailto:' + val; el.textContent = val; return; }
+        }
+
+        // Multi-paragraph text (stored with \n\n separating paragraphs)
+        if (el.getAttribute('data-cms-multi')) {
+            el.innerHTML = val.split('\n\n')
+                .map(para => '<p>' + para.replace(/\n/g, '<br>') + '</p>')
+                .join('');
+            return;
+        }
+
+        // Default: set innerHTML (allows <br> entities in stored text)
+        el.innerHTML = val;
+    });
 }
 
 // ===== NOTICE BANNER =====
@@ -346,9 +401,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     handleFormSubmit('registrationForm', 'successMessage',      'errorMessage');
 
     // Load both data files in parallel
-    const [retreatsData, siteConfig] = await Promise.all([loadRetreats(), loadSiteConfig()]);
+    const [retreatsData, siteConfig, pageContent] = await Promise.all([loadRetreats(), loadSiteConfig(), loadPageContent()]);
 
-    // Apply site-wide config
+    // Apply CMS content and site-wide config
+    applyPageContent(pageContent);
     applyNoticeBanner(siteConfig);
     applyFacilitiesHero(siteConfig);
     applyFacilitiesCardImages(siteConfig);

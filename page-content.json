@@ -1,0 +1,38 @@
+{
+  "index": {
+    "hero_title": "Adore the Lord in his Holy place.",
+    "hero_subtitle": "A new Catholic Retreat Centre in Charleville Parish"
+  },
+  "about": {
+    "hero_title": "About The Shalom Retreat Centre",
+    "hero_subtitle": "The new Charleville Parish Retreat Centre offers a place of retreat with a strong Catholic ethos and tradition",
+    "mission_heading": "Our Mission",
+    "mission_text": "The Shalom Charleville Parish Retreat Centre exists to provide a place of peace, contemplation, and retreat for all who wish to grow deeper in their faith, particularly through silent adoration.\n\nOur name, \"Shalom,\" embodies the Christian concept of wholeness, peace, and harmony with our Lord Jesus Christ and His Church so that we may be open to the promptings of the Holy Spirit.",
+    "mission_image": "https://i.imgur.com/yASF0Ds.jpeg?w=800&q=80",
+    "mission_image_alt": "Dining Room Refectory",
+    "vision_heading": "Our Vision",
+    "vision_text": "We envision a community of Catholics coming together for all types of events, whether they be one off retreats like silent retreats, lectio divina, or conferences, or regularly occuring retreats, like young men & women's clubs/prayer meetings, and so on. Through contemplative practices, spiritual direction, and silent adoration, we facilitate experiences that draw people closer to the heart of God.\n\nWhether you come for a silent retreat, a young adult's club, or a day of contemplative prayer, our hope is that you will leave refreshed, restored, and more deeply rooted in God's love.",
+    "vision_image": "https://i.imgur.com/74WP1Bu.jpeg?w=800&q=80",
+    "vision_image_alt": "Conference Room"
+  },
+  "contact": {
+    "page_heading": "Get In Touch",
+    "page_intro": "We\u2019d love to hear from you. Whether you have questions about our retreats, want to learn more about our centre, or simply need some guidance, we\u2019re here to help.",
+    "address": "Main Street, Charleville, Co. Cork, P56 YP79",
+    "phone_display": "+353 (0) 83 440 5359",
+    "phone_link": "+353834405359",
+    "email_info": "info@shalomcentre.ie",
+    "email_bookings": "bookings@shalomcentre.ie",
+    "hours_mon": "9:30am \u2013 5:00pm",
+    "hours_tue": "9:30am \u2013 5:00pm",
+    "hours_wed": "9:30am \u2013 5:00pm",
+    "hours_thu": "Open 24 hours",
+    "hours_fri": "10:30am \u2013 5:00pm",
+    "hours_sat": "Closed",
+    "hours_sun": "Closed"
+  },
+  "bookings": {
+    "section_heading": "Upcoming Retreats",
+    "section_subtitle": "Join us for transformative experiences of peace, renewal, and spiritual growth"
+  }
+}

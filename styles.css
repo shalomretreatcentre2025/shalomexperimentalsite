@@ -1153,11 +1153,11 @@ img {
     border-radius: 50%;
     background: var(--accent-color);
     flex-shrink: 0;
-    transition: var(--transition);
+    transition: background 0.2s, transform 0.2s;
 }
 
-.footer-links a:hover { color: var(--white); padding-left: 4px; }
-.footer-links a:hover::before { background: #d9bb85; }
+.footer-links a:hover { color: var(--white); }
+.footer-links a:hover::before { background: #d9bb85; transform: scale(1.4); }
 
 /* Contact list */
 .footer-contact-list {
@@ -2008,7 +2008,15 @@ img {
 .footer-links-grid {
     display: grid !important;
     grid-template-columns: 1fr 1fr;
-    gap: 0.4rem 1.2rem;
+    gap: 0.25rem 1.5rem;
+    align-items: start;
+}
+
+/* Prevent any link wrapping mid-word which breaks the grid row heights */
+.footer-links-grid a {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 /* ── Responsive ──────────────────────────────────── */
@@ -2029,3 +2037,56 @@ img {
     .fac-stats          { gap: 1rem; }
     .fac-checkboxes     { grid-template-columns: 1fr; }
 }
+
+/* ===== SITE EDIT PANEL — retreat manager ===== */
+.se-tabs {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+    border-bottom: 2px solid var(--border);
+    padding-bottom: 0.75rem;
+}
+
+.se-tab {
+    padding: 0.45rem 1.1rem;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    border: 1px solid var(--border);
+    background: var(--white);
+    color: var(--text);
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.se-tab:hover {
+    background: var(--bg-hover);
+    border-color: var(--olive);
+}
+
+.se-tab.active {
+    background: var(--olive);
+    border-color: var(--olive);
+    color: #fff;
+}
+
+.se-form {
+    max-height: 60vh;
+    overflow-y: auto;
+    padding-right: 0.5rem;
+    scrollbar-width: thin;
+}
+
+.se-section-head {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    margin: 1.4rem 0 0.8rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.se-section-head:first-child { margin-top: 0; }

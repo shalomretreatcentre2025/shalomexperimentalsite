@@ -434,6 +434,7 @@
             <small>Retreat Manager</small>
         </div>
         <div class="topbar-actions">
+                <button class="btn btn-ghost btn-sm" id="btnToggleSiteEdit">✏️ Site Edit</button>
                 <button class="btn btn-ghost btn-sm" id="btnToggleSiteSettings">🌐 Site Settings</button>
                 <button class="btn btn-ghost btn-sm" id="btnToggleSettings">⚙ Settings</button>
                 <button class="btn btn-ghost btn-sm" id="btnLogout">Sign Out</button>
@@ -469,6 +470,31 @@
 
             <!-- Retreat list -->
             <div class="retreat-list" id="retreatList"></div>
+
+            <!-- ═══ SITE EDIT PANEL ═══ -->
+            <div class="settings-panel hidden" id="siteEditPanel">
+                <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:1.4rem">
+                    <div>
+                        <h3 style="margin:0 0 0.3rem">✏️ Site Edit — Page Content</h3>
+                        <p style="font-size:13px;color:var(--text-muted);margin:0">Edit text and photos on each page. Changes publish instantly to GitHub.</p>
+                    </div>
+                    <button class="btn btn-ghost btn-sm" id="btnCloseSiteEdit" style="flex-shrink:0">✕ Close</button>
+                </div>
+
+                <!-- Page tabs -->
+                <div class="se-tabs" id="seTabBar"></div>
+
+                <!-- Dynamic form — rendered by JS -->
+                <div id="sePageForm" class="se-form"></div>
+
+                <div style="margin-top:1.6rem;display:flex;gap:12px;align-items:center">
+                    <button class="btn btn-primary" id="btnSaveSiteEdit">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                        Save &amp; Publish
+                    </button>
+                    <span id="seStatusMsg" style="font-size:13px;color:var(--success);display:none"></span>
+                </div>
+            </div>
 
             <!-- ═══ SITE SETTINGS PANEL ═══ -->
             <div class="settings-panel hidden" id="siteSettingsPanel">
@@ -1197,8 +1223,23 @@ function closeModal() {
 
 document.getElementById('btnModalClose').addEventListener('click', closeModal);
 document.getElementById('btnModalCancel').addEventListener('click', closeModal);
+
+// ── Drag-safe backdrop handler ────────────────────────────────────────────────
+// Problem: user drags to select text inside the form; if the mouse ends up on the
+// backdrop when released, a 'click' fires on the backdrop and closes the modal.
+// Fix: only treat a backdrop-click as intentional when BOTH mousedown AND mouseup
+// originated on the backdrop itself (i.e. no drag from inside the modal content).
+let _modalMouseDownOnBackdrop = false;
+
+document.getElementById('retreatModal').addEventListener('mousedown', e => {
+    _modalMouseDownOnBackdrop = (e.target.id === 'retreatModal');
+});
+
 document.getElementById('retreatModal').addEventListener('click', e => {
-    if (e.target.id === 'retreatModal') closeModal();
+    if (e.target.id !== 'retreatModal') return;       // landed inside content — ignore
+    if (!_modalMouseDownOnBackdrop) return;            // drag started inside — ignore
+    // True intentional backdrop click → ask to confirm discard
+    if (window.confirm('Discard changes and close?')) closeModal();
 });
 
 // Cost/donation toggle (req 6)
@@ -1522,7 +1563,8 @@ document.getElementById('btnAddCarouselImg').addEventListener('click', () => {
 
 document.getElementById('btnToggleSiteSettings').addEventListener('click', async () => {
     const panel = document.getElementById('siteSettingsPanel');
-    document.getElementById('settingsPanel').classList.add('hidden'); // close other panel
+    document.getElementById('settingsPanel').classList.add('hidden');
+    document.getElementById('siteEditPanel').classList.add('hidden');
     if (panel.classList.contains('hidden')) {
         panel.classList.remove('hidden');
         loading(true, 'Loading site settings…');
@@ -1616,6 +1658,251 @@ document.getElementById('btnUpdateConfig').addEventListener('click', () => {
     document.getElementById('newBaseUrl').value = '';
     refreshConfigDisplay();
     toast('Configuration saved.', 'success');
+});
+
+// ======================================================
+//  SITE EDIT — CMS for page text & images
+// ======================================================
+
+const SITE_EDIT_SCHEMA = {
+    index: {
+        label: 'Home Page',
+        sections: [
+            { heading: 'Hero', fields: [
+                { key: 'hero_title',    label: 'Main Headline', type: 'text',
+                  hint: 'The large heading visitors see first.' },
+                { key: 'hero_subtitle', label: 'Sub-heading',   type: 'text',
+                  hint: 'Smaller text beneath the headline.' },
+            ]},
+        ]
+    },
+    about: {
+        label: 'About Page',
+        sections: [
+            { heading: 'Page Header', fields: [
+                { key: 'hero_title',    label: 'Page Title',    type: 'text' },
+                { key: 'hero_subtitle', label: 'Page Subtitle', type: 'text' },
+            ]},
+            { heading: 'Mission Section', fields: [
+                { key: 'mission_heading', label: 'Heading',          type: 'text' },
+                { key: 'mission_text',    label: 'Body Text',        type: 'textarea',
+                  hint: 'Separate paragraphs with a blank line.' },
+                { key: 'mission_image',   label: 'Photo URL',        type: 'image',
+                  hint: 'Paste a public image link (PostImg, Imgur…).' },
+                { key: 'mission_image_alt', label: 'Photo description (alt text)', type: 'text' },
+            ]},
+            { heading: 'Vision Section', fields: [
+                { key: 'vision_heading', label: 'Heading',           type: 'text' },
+                { key: 'vision_text',    label: 'Body Text',         type: 'textarea',
+                  hint: 'Separate paragraphs with a blank line.' },
+                { key: 'vision_image',   label: 'Photo URL',         type: 'image' },
+                { key: 'vision_image_alt', label: 'Photo description (alt text)', type: 'text' },
+            ]},
+        ]
+    },
+    contact: {
+        label: 'Contact Page',
+        sections: [
+            { heading: 'Page Header', fields: [
+                { key: 'page_heading', label: 'Page Title',  type: 'text' },
+                { key: 'page_intro',   label: 'Intro Text',  type: 'textarea' },
+            ]},
+            { heading: 'Contact Details', fields: [
+                { key: 'address',        label: 'Address',              type: 'textarea',
+                  hint: 'Separate address lines with Enter.' },
+                { key: 'phone_display',  label: 'Phone (shown to visitors)', type: 'text',
+                  hint: 'e.g. +353 (0) 83 440 5359' },
+                { key: 'email_info',     label: 'Info email address',    type: 'text' },
+                { key: 'email_bookings', label: 'Bookings email address', type: 'text' },
+            ]},
+            { heading: 'Opening Hours', fields: [
+                { key: 'hours_mon', label: 'Monday',    type: 'text', hint: 'e.g. 9:30am – 5:00pm or Closed' },
+                { key: 'hours_tue', label: 'Tuesday',   type: 'text' },
+                { key: 'hours_wed', label: 'Wednesday', type: 'text' },
+                { key: 'hours_thu', label: 'Thursday',  type: 'text' },
+                { key: 'hours_fri', label: 'Friday',    type: 'text' },
+                { key: 'hours_sat', label: 'Saturday',  type: 'text' },
+                { key: 'hours_sun', label: 'Sunday',    type: 'text' },
+            ]},
+        ]
+    },
+    bookings: {
+        label: 'Retreats Page',
+        sections: [
+            { heading: 'Page Header', fields: [
+                { key: 'section_heading',  label: 'Section Heading',  type: 'text' },
+                { key: 'section_subtitle', label: 'Section Subtitle', type: 'text' },
+            ]},
+        ]
+    }
+};
+
+let siteEditContent = {};
+let siteEditContentSha = null;
+let seCurrentPage = 'index';
+
+async function loadSiteEditContent() {
+    try {
+        const file = await ghGet('page-content.json');
+        if (file) {
+            siteEditContent    = JSON.parse(ghBase64Decode(file.content));
+            siteEditContentSha = file.sha;
+        } else {
+            siteEditContent    = {};
+            siteEditContentSha = null;
+        }
+    } catch(e) {
+        siteEditContent    = {};
+        siteEditContentSha = null;
+    }
+}
+
+function buildSitEditTabs() {
+    const bar = document.getElementById('seTabBar');
+    bar.innerHTML = '';
+    Object.entries(SITE_EDIT_SCHEMA).forEach(([key, schema]) => {
+        const btn = document.createElement('button');
+        btn.className = 'se-tab' + (key === seCurrentPage ? ' active' : '');
+        btn.textContent = schema.label;
+        btn.addEventListener('click', () => {
+            // Save current page data before switching tabs
+            collectCurrentSePageData();
+            seCurrentPage = key;
+            bar.querySelectorAll('.se-tab').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderSePageForm();
+        });
+        bar.appendChild(btn);
+    });
+}
+
+function renderSePageForm() {
+    const form    = document.getElementById('sePageForm');
+    const schema  = SITE_EDIT_SCHEMA[seCurrentPage];
+    const content = siteEditContent[seCurrentPage] || {};
+    form.innerHTML = '';
+
+    schema.sections.forEach(section => {
+        const secHead = document.createElement('p');
+        secHead.className = 'se-section-head';
+        secHead.textContent = section.heading;
+        form.appendChild(secHead);
+
+        section.fields.forEach(field => {
+            const group = document.createElement('div');
+            group.className = 'form-group';
+            group.style.marginBottom = '14px';
+
+            const lbl = document.createElement('label');
+            lbl.className = 'field-label';
+            lbl.textContent = field.label;
+            group.appendChild(lbl);
+
+            const val = content[field.key] !== undefined ? content[field.key] : '';
+
+            if (field.type === 'textarea') {
+                const ta = document.createElement('textarea');
+                ta.value = val;
+                ta.rows  = 4;
+                ta.dataset.seKey = field.key;
+                ta.style.cssText = 'width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-size:14px;resize:vertical;font-family:inherit';
+                group.appendChild(ta);
+
+            } else if (field.type === 'image') {
+                const inp = document.createElement('input');
+                inp.type  = 'url';
+                inp.value = val;
+                inp.dataset.seKey  = field.key;
+                inp.placeholder = 'https://i.postimg.cc/…';
+                inp.style.cssText = 'width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-size:14px;box-sizing:border-box';
+                group.appendChild(inp);
+
+                const preview = document.createElement('div');
+                preview.className = 'se-img-preview';
+                preview.style.display = val ? '' : 'none';
+                if (val) preview.innerHTML = `<img src="${val}" alt="preview" style="max-width:100%;max-height:120px;border-radius:6px;margin-top:6px;object-fit:cover">`;
+                group.appendChild(preview);
+
+                inp.addEventListener('input', () => {
+                    const url = inp.value.trim();
+                    preview.style.display = url ? '' : 'none';
+                    if (url) preview.innerHTML = `<img src="${url}" alt="preview" style="max-width:100%;max-height:120px;border-radius:6px;margin-top:6px;object-fit:cover">`;
+                });
+
+            } else {
+                const inp = document.createElement('input');
+                inp.type  = 'text';
+                inp.value = val;
+                inp.dataset.seKey = field.key;
+                inp.style.cssText = 'width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-size:14px;box-sizing:border-box';
+                group.appendChild(inp);
+            }
+
+            if (field.hint) {
+                const hint = document.createElement('span');
+                hint.className   = 'field-hint';
+                hint.textContent = field.hint;
+                group.appendChild(hint);
+            }
+
+            form.appendChild(group);
+        });
+    });
+}
+
+function collectCurrentSePageData() {
+    if (!siteEditContent[seCurrentPage]) siteEditContent[seCurrentPage] = {};
+    document.querySelectorAll('#sePageForm [data-se-key]').forEach(el => {
+        siteEditContent[seCurrentPage][el.dataset.seKey] = el.value;
+    });
+}
+
+document.getElementById('btnToggleSiteEdit').addEventListener('click', async () => {
+    const panel = document.getElementById('siteEditPanel');
+    // Close other panels
+    document.getElementById('settingsPanel').classList.add('hidden');
+    document.getElementById('siteSettingsPanel').classList.add('hidden');
+
+    if (panel.classList.contains('hidden')) {
+        panel.classList.remove('hidden');
+        loading(true, 'Loading page content…');
+        await loadSiteEditContent();
+        loading(false);
+        seCurrentPage = 'index';
+        buildSitEditTabs();
+        renderSePageForm();
+        panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else {
+        panel.classList.add('hidden');
+    }
+});
+
+document.getElementById('btnCloseSiteEdit').addEventListener('click', () => {
+    document.getElementById('siteEditPanel').classList.add('hidden');
+});
+
+document.getElementById('btnSaveSiteEdit').addEventListener('click', async () => {
+    // Collect the currently-visible tab's data first
+    collectCurrentSePageData();
+
+    loading(true, 'Publishing page content…');
+    const statusEl = document.getElementById('seStatusMsg');
+    statusEl.style.display = 'none';
+
+    try {
+        const json = JSON.stringify(siteEditContent, null, 2);
+        await ghPut('page-content.json', json, siteEditContentSha, 'Update page content [shalom-cms]');
+        const file = await ghGet('page-content.json');
+        if (file) siteEditContentSha = file.sha;
+        toast('Page content saved and published!', 'success');
+        statusEl.textContent = '✓ Saved!';
+        statusEl.style.display = '';
+        setTimeout(() => { statusEl.style.display = 'none'; }, 3500);
+    } catch(e) {
+        toast('Save failed: ' + e.message, 'error');
+    } finally {
+        loading(false);
+    }
 });
 
 // ======================================================
